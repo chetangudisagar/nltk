@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Corpus Readers
 #
-# Copyright (C) 2001-2015 NLTK Project
+# Copyright (C) 2001-2017 NLTK Project
 # Author: Edward Loper <edloper@gmail.com>
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
@@ -76,14 +76,17 @@ brown = LazyCorpusLoader(
     cat_file='cats.txt', tagset='brown', encoding="ascii")
 cess_cat = LazyCorpusLoader(
     'cess_cat', BracketParseCorpusReader, r'(?!\.).*\.tbf',
-    tagset='unknown', encoding='ISO-8859-2')
+    tagset='unknown', encoding='ISO-8859-15')
 cess_esp = LazyCorpusLoader(
     'cess_esp', BracketParseCorpusReader, r'(?!\.).*\.tbf',
-    tagset='unknown', encoding='ISO-8859-2')
+    tagset='unknown', encoding='ISO-8859-15')
 cmudict = LazyCorpusLoader(
     'cmudict', CMUDictCorpusReader, ['cmudict'])
 comtrans = LazyCorpusLoader(
     'comtrans', AlignedCorpusReader, r'(?!\.).*\.txt')
+comparative_sentences = LazyCorpusLoader(
+    'comparative_sentences', ComparativeSentencesCorpusReader, r'labeledSentences\.txt',
+    encoding='latin-1')
 conll2000 = LazyCorpusLoader(
     'conll2000', ConllChunkCorpusReader,
     ['train.txt', 'test.txt'], ('NP','VP','PP'),
@@ -103,8 +106,10 @@ dependency_treebank = LazyCorpusLoader(
 floresta = LazyCorpusLoader(
     'floresta', BracketParseCorpusReader, r'(?!\.).*\.ptb', '#',
     tagset='unknown', encoding='ISO-8859-15')
-framenet = LazyCorpusLoader(
+framenet15 = LazyCorpusLoader(
     'framenet_v15', FramenetCorpusReader, ['frRelation.xml','frameIndex.xml','fulltextIndex.xml','luIndex.xml','semTypes.xml'])
+framenet = LazyCorpusLoader(
+    'framenet_v17', FramenetCorpusReader, ['frRelation.xml','frameIndex.xml','fulltextIndex.xml','luIndex.xml','semTypes.xml'])
 gazetteers = LazyCorpusLoader(
     'gazetteers', WordListCorpusReader, r'(?!LICENSE|\.).*\.txt',
     encoding='ISO-8859-2')
@@ -115,9 +120,6 @@ genesis = LazyCorpusLoader(
         ('.*', 'utf_8')])
 gutenberg = LazyCorpusLoader(
     'gutenberg', PlaintextCorpusReader, r'(?!\.).*\.txt', encoding='latin1')
-# corpus not available with NLTK; these lines caused help(nltk.corpus) to break
-#hebrew_treebank = LazyCorpusLoader(
-#    'hebrew_treebank', BracketParseCorpusReader, r'.*\.txt')
 ieer = LazyCorpusLoader(
     'ieer', IEERCorpusReader, r'(?!README|\.).*')
 inaugural = LazyCorpusLoader(
@@ -126,8 +128,7 @@ inaugural = LazyCorpusLoader(
 indian = LazyCorpusLoader(
     'indian', IndianCorpusReader, r'(?!\.).*\.pos',
     tagset='unknown', encoding='utf8')
-ipipan = LazyCorpusLoader(
-    'ipipan', IPIPANCorpusReader, r'(?!\.).*morph\.xml')
+
 jeita = LazyCorpusLoader(
     'jeita', ChasenCorpusReader, r'.*\.chasen', encoding='utf-8')
 knbc = LazyCorpusLoader(
@@ -147,17 +148,24 @@ movie_reviews = LazyCorpusLoader(
     'movie_reviews', CategorizedPlaintextCorpusReader,
     r'(?!\.).*\.txt', cat_pattern=r'(neg|pos)/.*',
     encoding='ascii')
+multext_east = LazyCorpusLoader(
+    'mte_teip5', MTECorpusReader, r'(oana).*\.xml', encoding="utf-8")
 names = LazyCorpusLoader(
     'names', WordListCorpusReader, r'(?!\.).*\.txt', encoding='ascii')
-nkjp = LazyCorpusLoader(
-    'nkjp', NKJPCorpusReader, r'', encoding='utf8')
 nps_chat = LazyCorpusLoader(
     'nps_chat', NPSChatCorpusReader, r'(?!README|\.).*\.xml', tagset='wsj')
-pl196x = LazyCorpusLoader(
-    'pl196x', Pl196xCorpusReader, r'[a-z]-.*\.xml',
-    cat_file='cats.txt', textid_file='textids.txt', encoding='utf8')
+opinion_lexicon = LazyCorpusLoader(
+    'opinion_lexicon', OpinionLexiconCorpusReader, r'(\w+)\-words\.txt',
+    encoding='ISO-8859-2')
 ppattach = LazyCorpusLoader(
     'ppattach', PPAttachmentCorpusReader, ['training', 'test', 'devset'])
+product_reviews_1 = LazyCorpusLoader(
+    'product_reviews_1', ReviewsCorpusReader, r'^(?!Readme).*\.txt', encoding='utf8')
+product_reviews_2 = LazyCorpusLoader(
+    'product_reviews_2', ReviewsCorpusReader, r'^(?!Readme).*\.txt', encoding='utf8')
+pros_cons = LazyCorpusLoader(
+    'pros_cons', ProsConsCorpusReader, r'Integrated(Cons|Pros)\.txt',
+    cat_pattern=r'Integrated(Cons|Pros)\.txt', encoding='ISO-8859-2')
 ptb = LazyCorpusLoader( # Penn Treebank v3: WSJ and Brown portions
     'ptb', CategorizedBracketParseCorpusReader, r'(WSJ/\d\d/WSJ_\d\d|BROWN/C[A-Z]/C[A-Z])\d\d.MRG',
     cat_file='allcats.txt', tagset='wsj')
@@ -170,6 +178,9 @@ rte = LazyCorpusLoader(
     'rte', RTECorpusReader, r'(?!\.).*\.xml')
 senseval = LazyCorpusLoader(
     'senseval', SensevalCorpusReader, r'(?!\.).*\.pos')
+sentence_polarity = LazyCorpusLoader(
+    'sentence_polarity', CategorizedSentencesCorpusReader, r'rt-polarity\.(neg|pos)',
+    cat_pattern=r'rt-polarity\.(neg|pos)', encoding='utf-8')
 sentiwordnet = LazyCorpusLoader(
     'sentiwordnet', SentiWordNetCorpusReader, 'SentiWordNet_3.0.0.txt', encoding='utf-8')
 shakespeare = LazyCorpusLoader(
@@ -182,6 +193,9 @@ state_union = LazyCorpusLoader(
     encoding='ISO-8859-2')
 stopwords = LazyCorpusLoader(
     'stopwords', WordListCorpusReader, r'(?!README|\.).*', encoding='utf8')
+subjectivity = LazyCorpusLoader(
+    'subjectivity', CategorizedSentencesCorpusReader, r'(quote.tok.gt9|plot.tok.gt9)\.5000',
+    cat_map={'quote.tok.gt9.5000':['subj'], 'plot.tok.gt9.5000':['obj']}, encoding='latin-1')
 swadesh = LazyCorpusLoader(
     'swadesh', SwadeshCorpusReader, r'(?!README|\.).*', encoding='utf8')
 swadesh110 = LazyCorpusLoader(
@@ -203,7 +217,7 @@ treebank = LazyCorpusLoader(
 treebank_chunk = LazyCorpusLoader(
     'treebank/tagged', ChunkedCorpusReader, r'wsj_.*\.pos',
     sent_tokenizer=RegexpTokenizer(r'(?<=/\.)\s*(?![^\[]*\])', gaps=True),
-    para_block_reader=tagged_treebank_para_block_reader, encoding='ascii')
+    para_block_reader=tagged_treebank_para_block_reader, tagset='wsj', encoding='ascii')
 treebank_raw = LazyCorpusLoader(
     'treebank/raw', PlaintextCorpusReader, r'wsj_.*', encoding='ISO-8859-2')
 twitter_samples = LazyCorpusLoader(
@@ -227,8 +241,7 @@ wordnet_ic = LazyCorpusLoader(
     'wordnet_ic', WordNetICCorpusReader, '.*\.dat')
 words = LazyCorpusLoader(
     'words', WordListCorpusReader, r'(?!README|\.).*', encoding='ascii')
-ycoe = LazyCorpusLoader(
-    'ycoe', YCOECorpusReader)
+
 # defined after treebank
 propbank = LazyCorpusLoader(
     'propbank', PropbankCorpusReader,
@@ -254,7 +267,38 @@ semcor = LazyCorpusLoader(
     'semcor', SemcorCorpusReader, r'brown./tagfiles/br-.*\.xml',
     wordnet) # Must be defined *after* wordnet corpus.
 
-  
+nonbreaking_prefixes = LazyCorpusLoader(
+    'nonbreaking_prefixes', NonbreakingPrefixesCorpusReader, r'(?!README|\.).*', encoding='utf8')
+perluniprops = LazyCorpusLoader(
+    'perluniprops', UnicharsCorpusReader, r'(?!README|\.).*', nltk_data_subdir='misc', encoding='utf8')
+
+# mwa_ppdb = LazyCorpusLoader(
+#     'mwa_ppdb', MWAPPDBCorpusReader, r'(?!README|\.).*', nltk_data_subdir='misc', encoding='utf8')
+
+# See https://github.com/nltk/nltk/issues/1579
+# and https://github.com/nltk/nltk/issues/1716
+#
+# pl196x = LazyCorpusLoader(
+#     'pl196x', Pl196xCorpusReader, r'[a-z]-.*\.xml',
+#     cat_file='cats.txt', textid_file='textids.txt', encoding='utf8')
+#
+# ipipan = LazyCorpusLoader(
+#     'ipipan', IPIPANCorpusReader, r'(?!\.).*morph\.xml')
+#
+# nkjp = LazyCorpusLoader(
+#     'nkjp', NKJPCorpusReader, r'', encoding='utf8')
+#
+#panlex_lite = LazyCorpusLoader(
+#    'panlex_lite', PanLexLiteCorpusReader)
+#
+# ycoe = LazyCorpusLoader(
+#     'ycoe', YCOECorpusReader)
+#
+# corpus not available with NLTK; these lines caused help(nltk.corpus) to break
+#hebrew_treebank = LazyCorpusLoader(
+#    'hebrew_treebank', BracketParseCorpusReader, r'.*\.txt')
+
+
 def demo():
     # This is out-of-date:
     abc.demo()

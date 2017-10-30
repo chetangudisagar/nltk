@@ -1,6 +1,6 @@
 # Natural Language Toolkit: CFG visualization
 #
-# Copyright (C) 2001-2015 NLTK Project
+# Copyright (C) 2001-2017 NLTK Project
 # Author: Edward Loper <edloper@gmail.com>
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
@@ -46,13 +46,11 @@ Visualization tools for CFGs.
 #   - disconnect top & bottom -- right click
 #     - if connected to top & bottom, then disconnect
 
-
-
-import nltk.compat
 import re
 
-from tkinter import (Button, Canvas, Entry, Frame, IntVar, Label,
-                     Scrollbar, Text, Tk, Toplevel)
+from six import string_types
+from six.moves.tkinter import (Button, Canvas, Entry, Frame, IntVar, Label,
+                               Scrollbar, Text, Tk, Toplevel)
 
 from nltk.grammar import (CFG, _read_cfg_production,
                           Nonterminal, nonterminals)
@@ -60,7 +58,6 @@ from nltk.tree import Tree
 from nltk.draw.tree import TreeSegmentWidget, tree_to_treesegment
 from nltk.draw.util import (CanvasFrame, ColorizedList, ShowText,
                             SymbolWidget, TextWidget)
-from nltk import compat
 
 ######################################################################
 # Production List
@@ -108,7 +105,7 @@ underscores (_).  Nonterminals are colored blue.  If you place the
 mouse over any nonterminal, then all occurrences of that nonterminal
 will be highlighted.
 
-Termianals must be surrounded by single quotes (') or double
+Terminals must be surrounded by single quotes (') or double
 quotes(\").  For example, "dog" and "New York" are terminals.
 Currently, the string within the quotes must consist of alphanumeric
 characters, underscores, and spaces.
@@ -617,7 +614,7 @@ class CFGDemo(object):
                     isinstance(widget, TreeSegmentWidget) and
                     node.symbol == widget.label().text()):
                     pass # matching nonterminal
-                elif (isinstance(node, compat.string_types) and
+                elif (isinstance(node, string_types) and
                       isinstance(widget, TextWidget) and
                       node == widget.text()):
                     pass # matching nonterminal

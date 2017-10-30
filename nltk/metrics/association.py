@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Ngram Association Measures
 #
-# Copyright (C) 2001-2015 NLTK Project
+# Copyright (C) 2001-2017 NLTK Project
 # Author: Joel Nothman <jnothman@student.usyd.edu.au>
 # URL: <http://nltk.org>
 # For license information, see LICENSE.TXT
@@ -11,6 +11,9 @@ generic, abstract implementation in ``NgramAssocMeasures``, and n-specific
 ``BigramAssocMeasures`` and ``TrigramAssocMeasures``.
 """
 
+from __future__ import division
+from abc import ABCMeta, abstractmethod
+from six import add_metaclass
 import math as _math
 from functools import reduce
 _log2 = lambda x: _math.log(x, 2.0)
@@ -38,6 +41,7 @@ TOTAL = -1
 """Marginals index for the number of words in the data"""
 
 
+@add_metaclass(ABCMeta)
 class NgramAssocMeasures(object):
     """
     An abstract class defining a collection of generic association measures.
@@ -60,16 +64,18 @@ class NgramAssocMeasures(object):
     _n = 0
 
     @staticmethod
+    @abstractmethod
     def _contingency(*marginals):
         """Calculates values of a contingency table from marginal values."""
         raise NotImplementedError("The contingency table is not available"
-                                    "in the general ngram case")
+                                  "in the general ngram case")
 
     @staticmethod
+    @abstractmethod
     def _marginals(*contingency):
         """Calculates values of contingency table marginals from its values."""
         raise NotImplementedError("The contingency table is not available"
-                                    "in the general ngram case")
+                                  "in the general ngram case")
 
     @classmethod
     def _expected_values(cls, cont):
@@ -83,12 +89,12 @@ class NgramAssocMeasures(object):
             yield (_product(sum(cont[x] for x in range(2 ** cls._n)
                                 if (x & j) == (i & j))
                             for j in bits) /
-                   float(n_all ** (cls._n - 1)))
+                   (n_all ** (cls._n - 1)))
 
     @staticmethod
     def raw_freq(*marginals):
         """Scores ngrams by their frequency"""
-        return float(marginals[NGRAM]) / marginals[TOTAL]
+        return marginals[NGRAM] / marginals[TOTAL]
 
     @classmethod
     def student_t(cls, *marginals):
@@ -97,7 +103,7 @@ class NgramAssocMeasures(object):
         """
         return ((marginals[NGRAM] -
                   _product(marginals[UNIGRAMS]) /
-                  float(marginals[TOTAL] ** (cls._n - 1))) /
+                  (marginals[TOTAL] ** (cls._n - 1))) /
                 (marginals[NGRAM] + _SMALL) ** .5)
 
     @classmethod
@@ -117,7 +123,7 @@ class NgramAssocMeasures(object):
         logarithm of the result is calculated.
         """
         return (marginals[NGRAM] ** kwargs.get('power', 3) /
-                float(_product(marginals[UNIGRAMS])))
+                _product(marginals[UNIGRAMS]))
 
     @classmethod
     def pmi(cls, *marginals):
@@ -133,21 +139,21 @@ class NgramAssocMeasures(object):
         """
         cont = cls._contingency(*marginals)
         return (cls._n *
-                sum(obs * _ln(float(obs) / (exp + _SMALL) + _SMALL)
+                sum(obs * _ln(obs / (exp + _SMALL) + _SMALL)
                     for obs, exp in zip(cont, cls._expected_values(cont))))
 
     @classmethod
     def poisson_stirling(cls, *marginals):
         """Scores ngrams using the Poisson-Stirling measure."""
         exp = (_product(marginals[UNIGRAMS]) /
-               float(marginals[TOTAL] ** (cls._n - 1)))
+               (marginals[TOTAL] ** (cls._n - 1)))
         return marginals[NGRAM] * (_log2(marginals[NGRAM] / exp) - 1)
 
     @classmethod
     def jaccard(cls, *marginals):
         """Scores ngrams using the Jaccard index."""
         cont = cls._contingency(*marginals)
-        return float(cont[0]) / sum(cont[:-1])
+        return cont[0] / sum(cont[:-1])
 
 
 class BigramAssocMeasures(NgramAssocMeasures):
@@ -199,7 +205,7 @@ class BigramAssocMeasures(NgramAssocMeasures):
         n_xx = sum(cont)
         # For each contingency table cell
         for i in range(4):
-            yield (cont[i] + cont[i ^ 1]) * (cont[i] + cont[i ^ 2]) / float(n_xx)
+            yield (cont[i] + cont[i ^ 1]) * (cont[i] + cont[i ^ 2]) / n_xx
 
     @classmethod
     def phi_sq(cls, *marginals):
@@ -208,7 +214,7 @@ class BigramAssocMeasures(NgramAssocMeasures):
         """
         n_ii, n_io, n_oi, n_oo = cls._contingency(*marginals)
 
-        return (float((n_ii*n_oo - n_io*n_oi)**2) /
+        return ((n_ii*n_oo - n_io*n_oi)**2 /
                 ((n_ii + n_io) * (n_ii + n_oi) * (n_io + n_oo) * (n_oi + n_oo)))
 
     @classmethod
@@ -235,7 +241,7 @@ class BigramAssocMeasures(NgramAssocMeasures):
     def dice(n_ii, n_ix_xi_tuple, n_xx):
         """Scores bigrams using Dice's coefficient."""
         (n_ix, n_xi) = n_ix_xi_tuple
-        return 2 * float(n_ii) / (n_ix + n_xi)
+        return 2 * n_ii / (n_ix + n_xi)
 
 
 class TrigramAssocMeasures(NgramAssocMeasures):
@@ -406,4 +412,3 @@ class ContingencyMeasures(object):
         res.__doc__ = old_fn.__doc__
         res.__name__ = old_fn.__name__
         return res
-

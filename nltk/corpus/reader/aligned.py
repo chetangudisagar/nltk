@@ -1,13 +1,14 @@
 # Natural Language Toolkit: Aligned Corpus Reader
 #
-# Copyright (C) 2001-2015 NLTK Project
+# Copyright (C) 2001-2017 NLTK Project
 # URL: <http://nltk.org/>
 # Author: Steven Bird <stevenbird1@gmail.com>
 # For license information, see LICENSE.TXT
 
-from nltk import compat
+from six import string_types
+
 from nltk.tokenize import WhitespaceTokenizer, RegexpTokenizer
-from nltk.align import AlignedSent
+from nltk.translate import AlignedSent, Alignment
 
 from nltk.corpus.reader.api import CorpusReader
 from nltk.corpus.reader.util import StreamBackedCorpusView, concat,\
@@ -45,7 +46,7 @@ class AlignedCorpusReader(CorpusReader):
         :rtype: str
         """
         if fileids is None: fileids = self._fileids
-        elif isinstance(fileids, compat.string_types): fileids = [fileids]
+        elif isinstance(fileids, string_types): fileids = [fileids]
         return concat([self.open(f).read() for f in fileids])
 
     def words(self, fileids=None):
@@ -104,7 +105,7 @@ class AlignedSentCorpusView(StreamBackedCorpusView):
                  for alignedsent_str in self._alignedsent_block_reader(stream)
                  for sent_str in self._sent_tokenizer.tokenize(alignedsent_str)]
         if self._aligned:
-            block[2] = " ".join(block[2]) # kludge; we shouldn't have tokenized the alignment string
+            block[2] = Alignment.fromstring(" ".join(block[2])) # kludge; we shouldn't have tokenized the alignment string
             block = [AlignedSent(*block)]
         elif self._group_by_sent:
             block = [block[0]]

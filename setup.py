@@ -2,7 +2,7 @@
 #
 # Setup script for the Natural Language Toolkit
 #
-# Copyright (C) 2001-2015 NLTK Project
+# Copyright (C) 2001-2017 NLTK Project
 # Author: Steven Bird <stevenbird1@gmail.com>
 #         Edward Loper <edloper@gmail.com>
 #         Ewan Klein <ewan@inf.ed.ac.uk>
@@ -29,6 +29,32 @@ with open(version_file) as fh:
 # setuptools
 from setuptools import setup, find_packages
 
+# Specify groups of optional dependencies
+extras_require = {
+    'machine_learning': [
+        'gensim',
+        'numpy',
+        'python-crfsuite',
+        'scikit-learn',
+        'scipy'
+    ],
+    'plot': [
+        'matplotlib',
+    ],
+    'tgrep': [
+        'pyparsing',
+    ],
+    'twitter': [
+        'twython',
+    ],
+    'corenlp': [
+        'requests',
+    ],
+}
+
+# Add a group made up of all optional dependencies
+extras_require['all'] = set(package for group in extras_require.values() for package in group)
+
 setup(
     name = "nltk",
     description = "Natural Language Toolkit",
@@ -36,7 +62,7 @@ setup(
     url = "http://nltk.org/",
     long_description = """\
 The Natural Language Toolkit (NLTK) is a Python package for
-natural language processing.  NLTK requires Python 2.6, 2.7, or 3.2+.""",
+natural language processing.  NLTK requires Python 2.7, 3.4, or 3.5.""",
     license = "Apache License, Version 2.0",
     keywords = ['NLP', 'CL', 'natural language processing',
                 'computational linguistics', 'parsing', 'tagging',
@@ -54,11 +80,9 @@ natural language processing.  NLTK requires Python 2.6, 2.7, or 3.2+.""",
     'Intended Audience :: Science/Research',
     'License :: OSI Approved :: Apache Software License',
     'Operating System :: OS Independent',
-    'Programming Language :: Python :: 2.6',
     'Programming Language :: Python :: 2.7',
-    'Programming Language :: Python :: 3.2',
-    'Programming Language :: Python :: 3.3',
     'Programming Language :: Python :: 3.4',
+    'Programming Language :: Python :: 3.5',
     'Topic :: Scientific/Engineering',
     'Topic :: Scientific/Engineering :: Artificial Intelligence',
     'Topic :: Scientific/Engineering :: Human Machine Interfaces',
@@ -70,7 +94,8 @@ natural language processing.  NLTK requires Python 2.6, 2.7, or 3.2+.""",
     'Topic :: Text Processing :: Linguistic',
     ],
     package_data = {'nltk': ['test/*.doctest', 'VERSION']},
-    install_requires = ['six>=1.9.0'],
+    install_requires = ['six'],
+    extras_require = extras_require,
     packages = find_packages(),
     zip_safe=False, # since normal files will be present too?
     )

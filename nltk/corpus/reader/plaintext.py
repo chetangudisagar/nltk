@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Plaintext Corpus Reader
 #
-# Copyright (C) 2001-2015 NLTK Project
+# Copyright (C) 2001-2017 NLTK Project
 # Author: Steven Bird <stevenbird1@gmail.com>
 #         Edward Loper <edloper@gmail.com>
 #         Nitin Madnani <nmadnani@umiacs.umd.edu>
@@ -11,10 +11,10 @@
 A reader for corpora that consist of plaintext documents.
 """
 
+from six import string_types
 import codecs
 
 import nltk.data
-from nltk.compat import string_types
 from nltk.tokenize import *
 
 from nltk.corpus.reader.util import *
@@ -71,7 +71,12 @@ class PlaintextCorpusReader(CorpusReader):
         """
         if fileids is None: fileids = self._fileids
         elif isinstance(fileids, string_types): fileids = [fileids]
-        return concat([self.open(f).read() for f in fileids])
+        raw_texts = []
+        for f in fileids:
+            _fin = self.open(f)
+            raw_texts.append(_fin.read())
+            _fin.close()
+        return concat(raw_texts)
 
     def words(self, fileids=None):
         """
@@ -225,4 +230,3 @@ class EuroparlCorpusReader(PlaintextCorpusReader):
 
     def paras(self, fileids=None):
         raise NotImplementedError('The Europarl corpus reader does not support paragraphs. Please use chapters() instead.')
-

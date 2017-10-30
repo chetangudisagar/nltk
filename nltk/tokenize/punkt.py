@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Punkt sentence tokenizer
 #
-# Copyright (C) 2001-2015 NLTK Project
+# Copyright (C) 2001-2017 NLTK Project
 # Algorithm: Kiss & Strunk (2006)
 # Author: Willy <willy@csse.unimelb.edu.au> (original Python port)
 #         Steven Bird <stevenbird1@gmail.com> (additions)
@@ -99,7 +99,7 @@ The algorithm for this tokenizer is described in::
   Kiss, Tibor and Strunk, Jan (2006): Unsupervised Multilingual Sentence
     Boundary Detection.  Computational Linguistics 32: 485-525.
 """
-from __future__ import print_function, unicode_literals
+from __future__ import print_function, unicode_literals, division
 
 # TODO: Make orthographic heuristic less susceptible to overtraining
 # TODO: Frequent sentence starters optionally exclude always-capitalised words
@@ -109,7 +109,9 @@ import re
 import math
 from collections import defaultdict
 
-from nltk.compat import unicode_repr, python_2_unicode_compatible, string_types
+from six import string_types
+
+from nltk.compat import unicode_repr, python_2_unicode_compatible
 from nltk.probability import FreqDist
 from nltk.tokenize.api import TokenizerI
 
@@ -519,7 +521,9 @@ class PunktBaseClass(object):
     """
 
     def __init__(self, lang_vars=PunktLanguageVars(), token_cls=PunktToken,
-            params=PunktParameters()):
+            params=None):
+        if params is None:
+            params = PunktParameters() 
         self._params = params
         self._lang_vars = lang_vars
         self._Token = token_cls
@@ -1036,12 +1040,12 @@ class PunktTrainer(PunktBaseClass):
         ratio scores for abbreviation candidates.  The details of how
         this works is available in the paper.
         """
-        p1 = float(count_b) / N
+        p1 = count_b / N
         p2 = 0.99
 
-        null_hypo = (float(count_ab) * math.log(p1) +
+        null_hypo = (count_ab * math.log(p1) +
                      (count_a - count_ab) * math.log(1.0 - p1))
-        alt_hypo  = (float(count_ab) * math.log(p2) +
+        alt_hypo  = (count_ab * math.log(p2) +
                      (count_a - count_ab) * math.log(1.0 - p2))
 
         likelihood = null_hypo - alt_hypo
@@ -1058,25 +1062,32 @@ class PunktTrainer(PunktBaseClass):
         unlike the previous log_l function where it used modified
         Dunning log-likelihood values
         """
-        import math
+        p = count_b / N
+        p1 = count_ab / count_a
+        try:
+            p2 = (count_b - count_ab) / (N - count_a)
+        except ZeroDivisionError as e:
+            p2 = 1
 
-        p = 1.0 * count_b / N
-        p1 = 1.0 * count_ab / count_a
-        p2 = 1.0 * (count_b - count_ab) / (N - count_a)
+        try:
+            summand1 = (count_ab * math.log(p) +
+                        (count_a - count_ab) * math.log(1.0 - p))
+        except ValueError as e:
+            summand1 = 0
 
-        summand1 = (count_ab * math.log(p) +
-                    (count_a - count_ab) * math.log(1.0 - p))
+        try:
+            summand2 = ((count_b - count_ab) * math.log(p) +
+                        (N - count_a - count_b + count_ab) * math.log(1.0 - p))
+        except ValueError as e:
+            summand2 = 0
 
-        summand2 = ((count_b - count_ab) * math.log(p) +
-                    (N - count_a - count_b + count_ab) * math.log(1.0 - p))
-
-        if count_a == count_ab:
+        if count_a == count_ab or p1 <= 0 or p1 >= 1:
             summand3 = 0
         else:
             summand3 = (count_ab * math.log(p1) +
                         (count_a - count_ab) * math.log(1.0 - p1))
 
-        if count_b == count_ab:
+        if count_b == count_ab or p2 <= 0 or p2 >= 1:
             summand4 = 0
         else:
             summand4 = ((count_b - count_ab) * math.log(p2) +
@@ -1126,8 +1137,8 @@ class PunktTrainer(PunktBaseClass):
                                               col_count, self._type_fdist.N())
                 # Filter out the not-so-collocative
                 if (ll >= self.COLLOCATION and
-                    (float(self._type_fdist.N())/typ1_count >
-                     float(typ2_count)/col_count)):
+                    (self._type_fdist.N()/typ1_count >
+                     typ2_count/col_count)):
                     yield (typ1, typ2), ll
 
     #////////////////////////////////////////////////////////////
@@ -1166,8 +1177,8 @@ class PunktTrainer(PunktBaseClass):
                                           self._type_fdist.N())
 
             if (ll >= self.SENT_STARTER and
-                float(self._type_fdist.N())/self._sentbreak_count >
-                float(typ_count)/typ_at_break_count):
+                self._type_fdist.N()/self._sentbreak_count >
+                typ_count/typ_at_break_count):
 
                 yield typ, ll
 
@@ -1285,7 +1296,8 @@ class PunktSentenceTokenizer(PunktBaseClass,TokenizerI):
                 else:
                     # next sentence starts at following punctuation
                     last_break = match.end()
-        yield slice(last_break, len(text))
+        # The last sentence should not contain trailing whitespace.
+        yield slice(last_break, len(text.rstrip()))
 
     def _realign_boundaries(self, text, slices):
         """
@@ -1597,5 +1609,3 @@ def demo(text, tok_cls=PunktSentenceTokenizer, train_cls=PunktTrainer):
     sbd = tok_cls(trainer.get_params())
     for l in sbd.sentences_from_text(text):
         print(cleanup(l))
-
-

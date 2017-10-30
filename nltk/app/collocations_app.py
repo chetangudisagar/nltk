@@ -1,22 +1,21 @@
 # Natural Language Toolkit: Collocations Application
 # Much of the GUI code is imported from concordance.py; We intend to merge these tools together
-# Copyright (C) 2001-2015 NLTK Project
+# Copyright (C) 2001-2017 NLTK Project
 # Author: Sumukh Ghodke <sghodke@csse.unimelb.edu.au>
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
 #
 
 
-import nltk.compat
+from __future__ import division
+
 import threading
-import tkinter.font
-if nltk.compat.PY3:
-    import queue as q
-else:
-    import Queue as q
-from tkinter import (Button, END, Frame, IntVar, LEFT, Label, Menu,
-                     OptionMenu, SUNKEN, Scrollbar, StringVar,
-                     Text, Tk)
+
+from six.moves import queue as q
+from six.moves.tkinter_font import Font
+from six.moves.tkinter import (Button, END, Frame, IntVar, LEFT, Label, Menu,
+                               OptionMenu, SUNKEN, Scrollbar, StringVar,
+                               Text, Tk)
 
 from nltk.corpus import (cess_cat, brown, nps_chat, treebank, sinica_treebank, alpino,
                          indian, floresta, mac_morpho, machado, cess_esp)
@@ -144,7 +143,7 @@ class CollocationsView:
         vscrollbar = Scrollbar(i1, borderwidth=1)
         hscrollbar = Scrollbar(i2, borderwidth=1, orient='horiz')
         self.results_box = Text(i1,
-                    font=tkinter.font.Font(family='courier', size='16'),
+                    font=Font(family='courier', size='16'),
                     state='disabled', borderwidth=1,
                     yscrollcommand=vscrollbar.set,
                     xscrollcommand=hscrollbar.set, wrap='none', width='40', height = '20', exportselection=1)
@@ -327,7 +326,7 @@ class CollocationsModel:
                 text = [w for w in words if len(w) > 2]
                 fd = FreqDist(tuple(text[i:i+2]) for i in range(len(text)-1))
                 vocab = FreqDist(text)
-                scored = [((w1,w2), fd[(w1,w2)] ** 3 / float(vocab[w1] * vocab[w2])) for w1, w2 in fd]
+                scored = [((w1,w2), fd[(w1,w2)] ** 3 / (vocab[w1] * vocab[w2])) for w1, w2 in fd]
                 scored.sort(key=itemgetter(1), reverse=True)
                 self.model.collocations = list(map(itemgetter(0), scored))
                 self.model.queue.put(CORPUS_LOADED_EVENT)

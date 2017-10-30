@@ -1,18 +1,82 @@
 NLTK News
 =========
 
+2017
+----
+
+NLTK 3.2.5 release: September 2017
+   Arabic stemmers (ARLSTem, Snowball), 
+   NIST MT evaluation metric and added NIST international_tokenize, 
+   Moses tokenizer, 
+   Document Russian tagger, 
+   Fix to Stanford segmenter, 
+   Improve treebank detokenizer, VerbNet, Vader, 
+   Misc code and documentation cleanups, 
+   Implement fixes suggested by LGTM 
+
+NLTK 3.2.4 released: May 2017
+   Remove load-time dependency on Python requests library,
+   Add support for Arabic in StanfordSegmenter
+
+NLTK 3.2.3 released: May 2017
+   Interface to Stanford CoreNLP Web API, improved Lancaster stemmer,
+   improved Treebank tokenizer, support custom tab files for extending WordNet,
+   speed up TnT tagger, speed up FreqDist and ConditionalFreqDist,
+   new corpus reader for MWA subset of PPDB; improvements to testing framework
+
+2016
+----
+
+NLTK 3.2.2 released: December 2016
+   Support for Aline, ChrF and GLEU MT evaluation metrics,
+   Russian POS tagger model, Moses detokenizer,
+   rewrite Porter Stemmer and FrameNet corpus reader,
+   update FrameNet Corpus to version 1.7,
+   fixes: stanford_segmenter.py, SentiText, CoNLL Corpus Reader,
+   BLEU, naivebayes, Krippendorff's alpha, Punkt, Moses tokenizer,
+   TweetTokenizer, ToktokTokenizer;
+   improvements to testing framework
+
+NLTK 3.2.1 released: April 2016
+   Support for CCG semantics, Stanford segmenter, VADER lexicon;
+   Fixes to BLEU score calculation, CHILDES corpus reader.
+
+NLTK 3.2 released : March 2016
+   Fixes for Python 3.5, code cleanups now Python 2.6 is no longer
+   supported, support for PanLex, support for third party download
+   locations for NLTK data, new support for RIBES score, BLEU
+   smoothing, corpus-level BLEU, improvements to TweetTokenizer,
+   updates for Stanford API, add mathematical operators to
+   ConditionalFreqDist, fix bug in sentiwordnet for adjectives,
+   improvements to documentation, code cleanups, consistent handling
+   of file paths for cross-platform operation.
+
 2015
 ----
 
-NLTK 3.0.4 released : July 2015
-   Minor bugfixes and enhancements
-   For full details see:
+NLTK 3.1 released : October 2015
+   Add support for Python 3.5, drop support for Python 2.6,
+   sentiment analysis package and several corpora,
+   improved POS tagger, Twitter package,
+   multi-word expression tokenizer,
+   wrapper for Stanford Neural Dependency Parser,
+   improved translation/alignment module including stack decoder,
+   skipgram and everygram methods,
+   Multext East Corpus and MTECorpusReader,
+   minor bugfixes and enhancements
+   For details see:
    https://github.com/nltk/nltk/blob/develop/ChangeLog
 
+
+NLTK 3.0.5 released : September 2015
+   New Twitter package; updates to IBM models 1-3, new models 4 and 5,
+   minor bugfixes and enhancements
+
+NLTK 3.0.4 released : July 2015
+   Minor bugfixes and enhancements.
+
 NLTK 3.0.3 released : June 2015
-   PanLex Swadesh Corpus, tgrep tree search, minor bugfixes
-   For full details see:
-   https://github.com/nltk/nltk/blob/develop/ChangeLog
+   PanLex Swadesh Corpus, tgrep tree search, minor bugfixes.
 
 NLTK 3.0.2 released : March 2015
    Senna, BLLIP, python-crfsuite interfaces, transition-based dependency parsers,
@@ -69,7 +133,7 @@ NLTK 3.0a0 released : January 2013
 ----
 
 Python Grant : November 2012
-   The Python Software Foundation is sponsoring Mikhail Korborov's work on porting NLTK to Python 3.
+   The Python Software Foundation is sponsoring Mikhail Korobov's work on porting NLTK to Python 3.
    http://pyfound.blogspot.hu/2012/11/grants-to-assist-kivy-nltk-in-porting.html
 
 NLTK 2.0.4 released : November 2012

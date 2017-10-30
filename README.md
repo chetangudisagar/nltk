@@ -1,7 +1,8 @@
 # Natural Language Toolkit (NLTK)
+[![PyPI](https://img.shields.io/pypi/v/nltk.svg)](https://pypi.python.org/pypi/nltk) [![Jenkins](https://img.shields.io/jenkins/s/https/nltk.ci.cloudbees.com/job/nltk.svg)](https://nltk.ci.cloudbees.com/job/nltk/lastCompletedBuild/testReport/)
 
 NLTK -- the Natural Language Toolkit -- is a suite of open source Python
-modules, data sets and tutorials supporting research and development in Natural
+modules, data sets, and tutorials supporting research and development in Natural
 Language Processing.
 
 For documentation, please visit [nltk.org](http://www.nltk.org/).
@@ -9,7 +10,7 @@ For documentation, please visit [nltk.org](http://www.nltk.org/).
 
 ## Contributing
 
-Do you want to contribute with NLTK development? Great! Please read more details
+Do you want to contribute to NLTK development? Great! Please read more details
 at [CONTRIBUTING.md](CONTRIBUTING.md).
 
 See also [How to contribute to NLTK](http://www.nltk.org/contribute.html).
@@ -31,7 +32,7 @@ If you publish work that uses NLTK, please cite the NLTK book, as follows:
 
 ## Copyright
 
-Copyright (C) 2001-2015 NLTK Project
+Copyright (C) 2001-2017 NLTK Project
 
 For license information, see [LICENSE.txt](LICENSE.txt).
 
@@ -44,5 +45,5 @@ For license information, see [LICENSE.txt](LICENSE.txt).
 - NLTK documentation is distributed under the Creative Commons
   Attribution-Noncommercial-No Derivative Works 3.0 United States license.
 - NLTK corpora are provided under the terms given in the README file for each
-  corpus; all are redistributable, and available for non-commercial use.
+  corpus; all are redistributable and available for non-commercial use.
 - NLTK may be freely redistributed, subject to the provisions of these licenses.

@@ -1,4 +1,4 @@
-# Natural Language Toolkit (NLTK) Authors
+﻿# Natural Language Toolkit (NLTK) Authors
 
 ## Original Authors
 
@@ -9,6 +9,7 @@
 
 ## Contributors
 
+- Hyuckin David Lim
 - Rami Al-Rfou'
 - Mark Amery
 - Greg Aumann
@@ -20,6 +21,7 @@
 - Robert Berwick
 - Dan Blanchard
 - Nathan Bodenstab
+- Alexander Böhm
 - Francis Bond
 - Paul Bone
 - Jordan Boyd-Graber
@@ -33,8 +35,10 @@
 - Jinyoung Choi
 - Andrew Clausen
 - Lucas Champollion
+- Graham Christensen
 - Trevor Cohn
 - David Coles
+- Claude Coulombe
 - Lucas Cooper
 - Robin Cooper
 - Chris Crowner
@@ -51,14 +55,17 @@
 - Pablo Duboue
 - Long Duong
 - Christian Federmann
+- Campion Fellin
 - Michelle Fullwood
 - Dan Garrette
 - Jean Mark Gawron
 - Sumukh Ghodke
 - Yoav Goldberg
+- Michael Wayne Goodman
 - Dougal Graham
 - Brent Gray
 - Simon Greenhill
+- Clark Grubb
 - Eduardo Pereira Habkost
 - Masato Hagiwara
 - Lauri Hallila
@@ -92,6 +99,7 @@
 - Pierre-François Laquerre
 - Stefano Lattarini
 - Haejoong Lee
+- Jackson Lee
 - Max Leonov
 - Chris Liechti
 - Tom Lippincott
@@ -124,17 +132,21 @@
 - Joel Nothman
 - Alireza Nourian
 - Alexander Oleynikov
+- Pierpaolo Pantone
 - Ted Pedersen
 - Jacob Perkins
 - Alberto Planas
 - Ondrej Platek
 - Alessandro Presta
+- Qi Liu
 - Martin Thorsen Ranang
+- Michael Recachinas
 - Brandon Rhodes
 - Joshua Ritterman
 - Will Roberts
 - Stuart Robinson
 - Carlos Rodriguez
+- Lorenzo Rubio
 - Alex Rudnick
 - Jussi Salmela
 - Geoffrey Sampson
@@ -151,6 +163,7 @@
 - Ceri Stagg
 - Peter Stahl
 - Oliver Steele
+- Thomas Stieglmaier
 - Jan Strunk
 - Liling Tan
 - Claire Taylor
@@ -169,6 +182,7 @@
 - Patrick Ye
 - Geraldine Sim Wei Ying
 - Jason Yoder
+- Thomas Zieglier
 - 0ssifrage
 - ducki13
 - kiwipi
@@ -178,3 +192,51 @@
 - pquentin
 - wvanlint
 - Álvaro Justen <https://github.com/turicas>
+- bjut-hz
+- Sergio Oller
+- Will Monroe
+- Elijah Rippeth
+- Emil Manukyan
+- Casper Lehmann-Strøm
+- Andrew Giel
+- Tanin Na Nakorn
+- Linghao Zhang
+- Colin Carroll
+- Heguang Miao
+- George Berry
+- Adam Nelson
+- J Richard Snape
+- Alex Constantin <alex@keyworder.ch>
+- Tsolak Ghukasyan
+- Prasasto Adi
+- Safwan Kamarrudin
+- Arthur Tilley
+- Vilhjalmur Thorsteinsson
+- Jaehoon Hwang <https://github.com/jaehoonhwang>
+- Chintan Shah <https://github.com/chintanshah24>
+- sbagan
+- Zicheng Xu
+- Albert Au Yeung <https://github.com/albertauyeung>
+- Shenjian Zhao 
+- Deng Wang <https://github.com/lmatt-bit>
+- Ali Abdullah
+- Stoytcho Stoytchev
+- Lakhdar Benzahia
+- Oleg Chislov
+
+## Others whose work we've taken and included in NLTK, but who didn't directly contribute it:
+### Contributors to the Porter Stemmer
+- Martin Porter
+- Vivake Gupta
+- Barry Wilkins
+- Hiranmay Ghosh
+- Chris Emerson
+
+### Contributors to Lancaster Stemmer
+- Matt Chaput, [Whoosh](https://bitbucket.org/mchaput/whoosh/wiki/Home)
+    - Strip prefix
+    - Custom rule.
+### Authors of snowball arabic stemmer algorithm
+- Assem Chelli
+- Abdelkrim Aries
+- Lakhdar Benzahia

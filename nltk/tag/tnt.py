@@ -1,6 +1,6 @@
 # Natural Language Toolkit: TnT Tagger
 #
-# Copyright (C) 2001-2015 NLTK Project
+# Copyright (C) 2001-2017 NLTK Project
 # Author: Sam Huston <sjh900@gmail.com>
 #
 # URL: <http://nltk.org/>
@@ -12,7 +12,7 @@ by Thorsten Brants
 
 http://acl.ldc.upenn.edu/A/A00/A00-1031.pdf
 '''
-from __future__ import print_function
+from __future__ import print_function, division
 from math import log
 
 from operator import itemgetter
@@ -237,14 +237,14 @@ class TnT(TaggerI):
 
                 # if c3, and c2 are equal and larger than c1
                 elif (c3 == c2) and (c3 > c1):
-                    tl2 += float(self._tri[history][tag]) /2.0
-                    tl3 += float(self._tri[history][tag]) /2.0
+                    tl2 += self._tri[history][tag] / 2.0
+                    tl3 += self._tri[history][tag] / 2.0
 
                 # if c1, and c2 are equal and larger than c3
                 # this might be a dumb thing to do....(not sure yet)
                 elif (c2 == c1) and (c1 > c3):
-                    tl1 += float(self._tri[history][tag]) /2.0
-                    tl2 += float(self._tri[history][tag]) /2.0
+                    tl1 += self._tri[history][tag] / 2.0
+                    tl2 += self._tri[history][tag] / 2.0
 
                 # otherwise there might be a problem
                 # eg: all values = 0
@@ -268,7 +268,7 @@ class TnT(TaggerI):
         if v2 == 0:
             return -1
         else:
-            return float(v1) / float(v2)
+            return v1 / v2
 
     def tagdata(self, data):
         '''
@@ -357,30 +357,24 @@ class TnT(TaggerI):
         # if word is known
         # compute the set of possible tags
         # and their associated log probabilities
-        if word in self._wd.conditions():
+        if word in self._wd:
             self.known += 1
 
             for (history, curr_sent_logprob) in current_states:
                 logprobs = []
 
                 for t in self._wd[word].keys():
-                    p_uni = self._uni.freq((t,C))
-                    p_bi = self._bi[history[-1]].freq((t,C))
-                    p_tri = self._tri[tuple(history[-2:])].freq((t,C))
-                    p_wd = float(self._wd[word][t])/float(self._uni[(t,C)])
+                    tC = (t,C)
+                    p_uni = self._uni.freq(tC)
+                    p_bi = self._bi[history[-1]].freq(tC)
+                    p_tri = self._tri[tuple(history[-2:])].freq(tC)
+                    p_wd = self._wd[word][t] / self._uni[tC]
                     p = self._l1 *p_uni + self._l2 *p_bi + self._l3 *p_tri
                     p2 = log(p, 2) + log(p_wd, 2)
 
-                    logprobs.append(((t,C), p2))
-
-
-                # compute the result of appending each tag to this history
-                for (tag, logprob) in logprobs:
-                    new_states.append((history + [tag],
-                                       curr_sent_logprob + logprob))
-
-
-
+                    # compute the result of appending each tag to this history
+                    new_states.append((history + [tC],
+                                       curr_sent_logprob + p2))
 
         # otherwise a new word, set of possible tags is unknown
         else:
@@ -398,7 +392,7 @@ class TnT(TaggerI):
                 tag = ('Unk',C)
 
             # otherwise apply the unknown word tagger
-            else :
+            else:
                 [(_w, t)] = list(self._unk.tag([word]))
                 tag = (t,C)
 
@@ -406,8 +400,6 @@ class TnT(TaggerI):
                 history.append(tag)
 
             new_states = current_states
-
-
 
         # now have computed a set of possible new_states
 
@@ -419,7 +411,6 @@ class TnT(TaggerI):
         # this is the beam search cut
         if len(new_states) > self._N:
             new_states = new_states[:self._N]
-
 
         # compute the tags for the rest of the sentence
         # return the best list of tags for the sentence
@@ -514,8 +505,8 @@ def demo2():
 
     for i in range(10):
         tacc = t.evaluate(d[i*100:((i+1)*100)])
-        tp_un = float(t.unknown) / float(t.known +t.unknown)
-        tp_kn = float(t.known) / float(t.known + t.unknown)
+        tp_un = t.unknown / (t.known + t.unknown)
+        tp_kn = t.known / (t.known + t.unknown)
         t.unknown = 0
         t.known = 0
 
@@ -526,8 +517,8 @@ def demo2():
         print('Accuracy over known words:', (tacc / tp_kn))
 
         sacc = s.evaluate(d[i*100:((i+1)*100)])
-        sp_un = float(s.unknown) / float(s.known +s.unknown)
-        sp_kn = float(s.known) / float(s.known + s.unknown)
+        sp_un = s.unknown / (s.known + s.unknown)
+        sp_kn = s.known / (s.known + s.unknown)
         s.unknown = 0
         s.known = 0
 
@@ -571,15 +562,15 @@ def demo3():
         s.train(etrain)
 
         tacc = t.evaluate(dtest)
-        tp_un = float(t.unknown) / float(t.known +t.unknown)
-        tp_kn = float(t.known) / float(t.known + t.unknown)
+        tp_un = t.unknown / (t.known + t.unknown)
+        tp_kn = t.known / (t.known + t.unknown)
         tknown += tp_kn
         t.unknown = 0
         t.known = 0
 
         sacc = s.evaluate(etest)
-        sp_un = float(s.unknown) / float(s.known + s.unknown)
-        sp_kn = float(s.known) / float(s.known + s.unknown)
+        sp_un = s.unknown / (s.known + s.unknown)
+        sp_kn = s.known / (s.known + s.unknown)
         sknown += sp_kn
         s.unknown = 0
         s.known = 0

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Natural Language Toolkit: Twitter client
 #
-# Copyright (C) 2001-2015 NLTK Project
+# Copyright (C) 2001-2017 NLTK Project
 # Author: Lorenzo Rubio <lrnzcig@gmail.com>
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
@@ -16,9 +16,10 @@ import os
 from nltk.compat import TemporaryDirectory
 import unittest
 
+from six.moves import zip
+
 from nltk.corpus import twitter_samples
-from nltk.twitter.util import json2csv, json2csv_entities
-from nltk.compat import izip
+from nltk.twitter.common import json2csv, json2csv_entities
 
 
 def are_files_identical(filename1, filename2, debug=False):
@@ -28,14 +29,14 @@ def are_files_identical(filename1, filename2, debug=False):
     with open(filename1, "rb") as fileA:
         with open(filename2, "rb") as fileB:
             result = True
-            for lineA, lineB in izip(sorted(fileA.readlines()),
+            for lineA, lineB in zip(sorted(fileA.readlines()),
                                      sorted(fileB.readlines())):
                 if lineA.strip() != lineB.strip():
                     if debug:
                         print("Error while comparing files. " +
                               "First difference at line below.")
-                        print("=> Output file line: {}".format(lineA))
-                        print("=> Refer. file line: {}".format(lineB))
+                        print("=> Output file line: {0}".format(lineA))
+                        print("=> Refer. file line: {0}".format(lineB))
                     result = False
                     break
             return result

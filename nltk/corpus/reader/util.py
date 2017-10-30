@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Corpus Reader Utilities
 #
-# Copyright (C) 2001-2015 NLTK Project
+# Copyright (C) 2001-2017 NLTK Project
 # Author: Steven Bird <stevenbird1@gmail.com>
 #         Edward Loper <edloper@gmail.com>
 # URL: <http://nltk.org/>
@@ -10,6 +10,7 @@ import os
 import bisect
 import re
 import tempfile
+from six import string_types, text_type
 from functools import reduce
 try:
     import cPickle as pickle
@@ -20,7 +21,6 @@ except ImportError:
 try: from xml.etree import cElementTree as ElementTree
 except ImportError: from xml.etree import ElementTree
 
-from nltk.compat import string_types, text_type
 from nltk.tokenize import wordpunct_tokenize
 from nltk.internals import slice_bounds
 from nltk.data import PathPointer, FileSystemPathPointer, ZipFilePathPointer
@@ -281,6 +281,11 @@ class StreamBackedCorpusView(AbstractLazySequence):
         if self._stream is None:
             self._open()
 
+        # If the file is empty, the while loop will never run.
+        # This *seems* to be all the state we need to set:
+        if self._eofpos == 0:
+            self._len = 0
+
         # Each iteration through this loop, we read a single block
         # from the stream.
         while filepos < self._eofpos:
@@ -334,6 +339,9 @@ class StreamBackedCorpusView(AbstractLazySequence):
 
         # If we reach this point, then we should know our length.
         assert self._len is not None
+        # Enforce closing of stream once we reached end of file
+        # We should have reached EOF once we're out of the while loop.
+        self.close()
 
     # Use concat for these, so we can use a ConcatenatedCorpusView
     # when possible.
@@ -794,4 +802,3 @@ def tagged_treebank_para_block_reader(stream):
         # Content line:
         else:
             para += line
-
