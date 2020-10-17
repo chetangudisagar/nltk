@@ -11,14 +11,6 @@ nltk Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`align` Module
--------------------
-
-.. automodule:: nltk.align
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 :mod:`collocations` Module
 --------------------------
 
@@ -91,6 +83,14 @@ nltk Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`translate` Module
+-----------------------
+
+.. automodule:: nltk.translate
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`tree` Module
 ------------------
 
@@ -115,6 +115,15 @@ nltk Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`wsd` Module
+------------------
+
+.. automodule:: nltk.wsd
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 Subpackages
 -----------
 
@@ -128,11 +137,9 @@ Subpackages
     nltk.cluster
     nltk.corpus
     nltk.draw
-    nltk.examples
     nltk.inference
     nltk.metrics
     nltk.misc
-    nltk.model
     nltk.parse
     nltk.sem
     nltk.stem

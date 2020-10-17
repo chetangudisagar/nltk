@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Collocations and Association Measures
 #
-# Copyright (C) 2001-2014 NLTK Project
+# Copyright (C) 2001-2019 NLTK Project
 # Author: Joel Nothman <jnothman@student.usyd.edu.au>
 # URL: <http://nltk.org>
 # For license information, see LICENSE.TXT
@@ -23,7 +23,6 @@ these functionalities, dependent on being provided a function which scores a
 ngram given appropriate frequency counts. A number of standard association
 measures are provided in bigram_measures and trigram_measures.
 """
-from __future__ import print_function
 
 # Possible TODOs:
 # - consider the distinction between f(x,_) and f(x) and whether our
@@ -32,12 +31,18 @@ from __future__ import print_function
 #   and unigram counts (raw_freq, pmi, student_t)
 
 import itertools as _itertools
-from operator import itemgetter as _itemgetter
-from nltk.compat import iteritems
+from six import iteritems
 
 from nltk.probability import FreqDist
 from nltk.util import ngrams
-from nltk.metrics import ContingencyMeasures, BigramAssocMeasures, TrigramAssocMeasures
+
+# these two unused imports are referenced in collocations.doctest
+from nltk.metrics import (
+    ContingencyMeasures,
+    BigramAssocMeasures,
+    TrigramAssocMeasures,
+    QuadgramAssocMeasures,
+)
 from nltk.metrics.spearman import ranks_from_scores, spearman_correlation
 
 
@@ -54,18 +59,39 @@ class AbstractCollocationFinder(object):
 
     def __init__(self, word_fd, ngram_fd):
         self.word_fd = word_fd
+        self.N = word_fd.N()
         self.ngram_fd = ngram_fd
+
+    @classmethod
+    def _build_new_documents(
+        cls, documents, window_size, pad_left=False, pad_right=False, pad_symbol=None
+    ):
+        """
+        Pad the document with the place holder according to the window_size
+        """
+        padding = (pad_symbol,) * (window_size - 1)
+        if pad_right:
+            return _itertools.chain.from_iterable(
+                _itertools.chain(doc, padding) for doc in documents
+            )
+        if pad_left:
+            return _itertools.chain.from_iterable(
+                _itertools.chain(padding, doc) for doc in documents
+            )
 
     @classmethod
     def from_documents(cls, documents):
         """Constructs a collocation finder given a collection of documents,
         each of which is a list (or iterable) of tokens.
         """
-        return cls.from_words(_itertools.chain(*documents))
+        # return cls.from_words(_itertools.chain(*documents))
+        return cls.from_words(
+            cls._build_new_documents(documents, cls.default_ws, pad_right=True)
+        )
 
     @staticmethod
     def _ngram_freqdist(words, n):
-        return FreqDist(tuple(words[i:i+n]) for i in range(len(words)-1))
+        return FreqDist(tuple(words[i : i + n]) for i in range(len(words) - 1))
 
     def _apply_filter(self, fn=lambda ngram, freq: False):
         """Generic filter removes ngrams from the frequency distribution
@@ -106,8 +132,7 @@ class AbstractCollocationFinder(object):
         """Returns a sequence of (ngram, score) pairs ordered from highest to
         lowest score, as determined by the scoring function provided.
         """
-        return sorted(self._score_ngrams(score_fn),
-                      key=_itemgetter(1), reverse=True)
+        return sorted(self._score_ngrams(score_fn), key=lambda t: (-t[1], t[0]))
 
     def nbest(self, score_fn, n):
         """Returns the top n ngrams when scored by the given function."""
@@ -130,6 +155,8 @@ class BigramCollocationFinder(AbstractCollocationFinder):
     constructing an instance directly.
     """
 
+    default_ws = 2
+
     def __init__(self, word_fd, bigram_fd, window_size=2):
         """Construct a BigramCollocationFinder, given FreqDists for
         appearances of words and (possibly non-contiguous) bigrams.
@@ -151,6 +178,8 @@ class BigramCollocationFinder(AbstractCollocationFinder):
 
         for window in ngrams(words, window_size, pad_right=True):
             w1 = window[0]
+            if w1 is None:
+                continue
             wfd[w1] += 1
             for w2 in window[1:]:
                 if w2 is not None:
@@ -162,7 +191,7 @@ class BigramCollocationFinder(AbstractCollocationFinder):
         function.  Following Church and Hanks (1990), counts are scaled by
         a factor of 1/(window_size - 1).
         """
-        n_all = self.word_fd.N()
+        n_all = self.N
         n_ii = self.ngram_fd[(w1, w2)] / (self.window_size - 1.0)
         if not n_ii:
             return
@@ -176,6 +205,8 @@ class TrigramCollocationFinder(AbstractCollocationFinder):
     association measures. It is often useful to use from_words() rather than
     constructing an instance directly.
     """
+
+    default_ws = 3
 
     def __init__(self, word_fd, bigram_fd, wildcard_fd, trigram_fd):
         """Construct a TrigramCollocationFinder, given FreqDists for
@@ -200,6 +231,8 @@ class TrigramCollocationFinder(AbstractCollocationFinder):
         tfd = FreqDist()
         for window in ngrams(words, window_size, pad_right=True):
             w1 = window[0]
+            if w1 is None:
+                continue
             for w2, w3 in _itertools.combinations(window[1:], 2):
                 wfd[w1] += 1
                 if w2 is None:
@@ -222,7 +255,7 @@ class TrigramCollocationFinder(AbstractCollocationFinder):
         """Returns the score for a given trigram using the given scoring
         function.
         """
-        n_all = self.word_fd.N()
+        n_all = self.N
         n_iii = self.ngram_fd[(w1, w2, w3)]
         if not n_iii:
             return
@@ -232,16 +265,15 @@ class TrigramCollocationFinder(AbstractCollocationFinder):
         n_ixx = self.word_fd[w1]
         n_xix = self.word_fd[w2]
         n_xxi = self.word_fd[w3]
-        return score_fn(n_iii,
-                        (n_iix, n_ixi, n_xii),
-                        (n_ixx, n_xix, n_xxi),
-                        n_all)
+        return score_fn(n_iii, (n_iix, n_ixi, n_xii), (n_ixx, n_xix, n_xxi), n_all)
 
 
 class QuadgramCollocationFinder(AbstractCollocationFinder):
     """A tool for the finding and ranking of quadgram collocations or other association measures.
     It is often useful to use from_words() rather than constructing an instance directly.
     """
+
+    default_ws = 4
 
     def __init__(self, word_fd, quadgram_fd, ii, iii, ixi, ixxi, iixi, ixii):
         """Construct a QuadgramCollocationFinder, given FreqDists for appearances of words,
@@ -271,6 +303,8 @@ class QuadgramCollocationFinder(AbstractCollocationFinder):
 
         for window in ngrams(words, window_size, pad_right=True):
             w1 = window[0]
+            if w1 is None:
+                continue
             for w2, w3, w4 in _itertools.combinations(window[1:], 3):
                 ixxx[w1] += 1
                 if w2 is None:
@@ -290,7 +324,7 @@ class QuadgramCollocationFinder(AbstractCollocationFinder):
         return cls(ixxx, iiii, ii, iii, ixi, ixxi, iixi, ixii)
 
     def score_ngram(self, score_fn, w1, w2, w3, w4):
-        n_all = self.word_fd.N()
+        n_all = self.N
         n_iiii = self.ngram_fd[(w1, w2, w3, w4)]
         if not n_iiii:
             return
@@ -310,16 +344,22 @@ class QuadgramCollocationFinder(AbstractCollocationFinder):
         n_xixx = self.word_fd[w2]
         n_xxix = self.word_fd[w3]
         n_xxxi = self.word_fd[w4]
-        return score_fn(n_iiii,
-                        (n_iiix, n_iixi, n_ixii, n_xiii),
-                        (n_iixx, n_ixix, n_ixxi, n_xixi, n_xxii, n_xiix),
-                        (n_ixxx, n_xixx, n_xxix, n_xxxi),
-                        n_all)
+        return score_fn(
+            n_iiii,
+            (n_iiix, n_iixi, n_ixii, n_xiii),
+            (n_iixx, n_ixix, n_ixxi, n_xixi, n_xxii, n_xiix),
+            (n_ixxx, n_xixx, n_xxix, n_xxxi),
+            n_all,
+        )
 
 
 def demo(scorer=None, compare_scorer=None):
     """Finds bigram collocations in the files of the WebText corpus."""
-    from nltk.metrics import BigramAssocMeasures, spearman_correlation, ranks_from_scores
+    from nltk.metrics import (
+        BigramAssocMeasures,
+        spearman_correlation,
+        ranks_from_scores,
+    )
 
     if scorer is None:
         scorer = BigramAssocMeasures.likelihood_ratio
@@ -328,41 +368,46 @@ def demo(scorer=None, compare_scorer=None):
 
     from nltk.corpus import stopwords, webtext
 
-    ignored_words = stopwords.words('english')
+    ignored_words = stopwords.words("english")
     word_filter = lambda w: len(w) < 3 or w.lower() in ignored_words
 
     for file in webtext.fileids():
-        words = [word.lower()
-                 for word in webtext.words(file)]
+        words = [word.lower() for word in webtext.words(file)]
 
         cf = BigramCollocationFinder.from_words(words)
         cf.apply_freq_filter(3)
         cf.apply_word_filter(word_filter)
 
+        corr = spearman_correlation(
+            ranks_from_scores(cf.score_ngrams(scorer)),
+            ranks_from_scores(cf.score_ngrams(compare_scorer)),
+        )
         print(file)
-        print('\t', [' '.join(tup) for tup in cf.nbest(scorer, 15)])
-        print('\t Correlation to %s: %0.4f' % (compare_scorer.__name__,
-                                               spearman_correlation(
-                                                   ranks_from_scores(cf.score_ngrams(scorer)),
-                                                   ranks_from_scores(cf.score_ngrams(compare_scorer)))))
+        print("\t", [" ".join(tup) for tup in cf.nbest(scorer, 15)])
+        print("\t Correlation to %s: %0.4f" % (compare_scorer.__name__, corr))
+
 
 # Slows down loading too much
 # bigram_measures = BigramAssocMeasures()
 # trigram_measures = TrigramAssocMeasures()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import sys
     from nltk.metrics import BigramAssocMeasures
 
     try:
-        scorer = eval('BigramAssocMeasures.' + sys.argv[1])
+        scorer = eval("BigramAssocMeasures." + sys.argv[1])
     except IndexError:
         scorer = None
     try:
-        compare_scorer = eval('BigramAssocMeasures.' + sys.argv[2])
+        compare_scorer = eval("BigramAssocMeasures." + sys.argv[2])
     except IndexError:
         compare_scorer = None
 
     demo(scorer, compare_scorer)
 
-__all__ = ['BigramCollocationFinder', 'TrigramCollocationFinder', 'QuadgramCollocationFinder']
+__all__ = [
+    "BigramCollocationFinder",
+    "TrigramCollocationFinder",
+    "QuadgramCollocationFinder",
+]

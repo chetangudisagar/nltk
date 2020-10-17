@@ -1,17 +1,15 @@
 # Natural Language Toolkit: WordNet stemmer interface
 #
-# Copyright (C) 2001-2014 NLTK Project
+# Copyright (C) 2001-2019 NLTK Project
 # Author: Steven Bird <stevenbird1@gmail.com>
 #         Edward Loper <edloper@gmail.com>
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
-from __future__ import unicode_literals
 
 from nltk.corpus.reader.wordnet import NOUN
 from nltk.corpus import wordnet
-from nltk.compat import python_2_unicode_compatible
 
-@python_2_unicode_compatible
+
 class WordNetLemmatizer(object):
     """
     WordNet Lemmatizer
@@ -41,14 +39,11 @@ class WordNetLemmatizer(object):
         return min(lemmas, key=len) if lemmas else word
 
     def __repr__(self):
-        return '<WordNetLemmatizer>'
+        return "<WordNetLemmatizer>"
 
 
 # unload wordnet
 def teardown_module(module=None):
     from nltk.corpus import wordnet
-    wordnet._unload()
 
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)
+    wordnet._unload()
