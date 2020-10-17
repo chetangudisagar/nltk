@@ -1,9 +1,10 @@
 # Natural Language Toolkit: Spearman Rank Correlation
 #
-# Copyright (C) 2001-2012 NLTK Project
+# Copyright (C) 2001-2016 NLTK Project
 # Author: Joel Nothman <jnothman@student.usyd.edu.au>
 # URL: <http://nltk.org>
 # For license information, see LICENSE.TXT
+from __future__ import division
 
 """
 Tools for comparing ranked lists.
@@ -16,9 +17,9 @@ def _rank_dists(ranks1, ranks2):
     """
     ranks1 = dict(ranks1)
     ranks2 = dict(ranks2)
-    for k, v1 in ranks1.iteritems():
+    for k in ranks1:
         try:
-            yield k, v1 - ranks2[k]
+            yield k, ranks1[k] - ranks2[k]
         except KeyError:
             pass
 
@@ -35,7 +36,7 @@ def spearman_correlation(ranks1, ranks2):
         res += d * d
         n += 1
     try:
-        return 1 - (6 * float(res) / (n * (n*n - 1)))
+        return 1 - (6 * res / (n * (n*n - 1)))
     except ZeroDivisionError:
         # Result is undefined if only one item is ranked
         return 0.0

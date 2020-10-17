@@ -1,22 +1,23 @@
 # Natural Language Toolkit: Evaluation
 #
-# Copyright (C) 2001-2012 NLTK Project
-# Author: Edward Loper <edloper@gradient.cis.upenn.edu>
-#         Steven Bird <sb@csse.unimelb.edu.au>
-# URL: <http://www.nltk.org/>
+# Copyright (C) 2001-2016 NLTK Project
+# Author: Edward Loper <edloper@gmail.com>
+#         Steven Bird <stevenbird1@gmail.com>
+# URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
+from __future__ import print_function, division
 
-
-from itertools import izip
 from math import fabs
 import operator
 from random import shuffle
+from functools import reduce
 
 try:
     from scipy.stats.stats import betai
 except ImportError:
     betai = None
 
+from nltk.compat import xrange, izip
 from nltk.util import LazyConcatenation, LazyMap
 
 def accuracy(reference, test):
@@ -36,7 +37,7 @@ def accuracy(reference, test):
     """
     if len(reference) != len(test):
         raise ValueError("Lists must have the same length.")
-    return float(sum(x == y for x, y in izip(reference, test))) / len(test)
+    return sum(x == y for x, y in izip(reference, test)) / len(test)
 
 def precision(reference, test):
     """
@@ -58,7 +59,7 @@ def precision(reference, test):
     if len(test) == 0:
         return None
     else:
-        return float(len(reference.intersection(test)))/len(test)
+        return len(reference.intersection(test)) / len(test)
 
 def recall(reference, test):
     """
@@ -80,7 +81,7 @@ def recall(reference, test):
     if len(reference) == 0:
         return None
     else:
-        return float(len(reference.intersection(test)))/len(reference)
+        return len(reference.intersection(test)) / len(reference)
 
 def f_measure(reference, test, alpha=0.5):
     """
@@ -112,7 +113,7 @@ def f_measure(reference, test, alpha=0.5):
         return None
     if p == 0 or r == 0:
         return 0
-    return 1.0/(alpha/p + (1-alpha)/r)
+    return 1.0 / (alpha / p + (1-alpha) / r)
 
 def log_likelihood(reference, test):
     """
@@ -132,7 +133,7 @@ def log_likelihood(reference, test):
     # Return the average value of dist.logprob(val).
     total_likelihood = sum(dist.logprob(val)
                             for (val, dist) in izip(reference, test))
-    return total_likelihood/len(reference)
+    return total_likelihood / len(reference)
 
 def approxrand(a, b, **kwargs):
     """
@@ -159,25 +160,25 @@ def approxrand(a, b, **kwargs):
     # there's no point in trying to shuffle beyond all possible permutations
     shuffles = \
         min(shuffles, reduce(operator.mul, xrange(1, len(a) + len(b) + 1)))
-    stat = kwargs.get('statistic', lambda lst: float(sum(lst)) / len(lst))
+    stat = kwargs.get('statistic', lambda lst: sum(lst) / len(lst))
     verbose = kwargs.get('verbose', False)
 
     if verbose:
-        print 'shuffles: %d' % shuffles
+        print('shuffles: %d' % shuffles)
 
     actual_stat = fabs(stat(a) - stat(b))
 
     if verbose:
-        print 'actual statistic: %f' % actual_stat
-        print '-' * 60
+        print('actual statistic: %f' % actual_stat)
+        print('-' * 60)
 
     c = 1e-100
     lst = LazyConcatenation([a, b])
-    indices = range(len(a) + len(b))
+    indices = list(range(len(a) + len(b)))
 
-    for i in range(shuffles):
+    for i in xrange(shuffles):
         if verbose and i % 10 == 0:
-            print 'shuffle: %d' % i
+            print('shuffle: %d' % i)
 
         shuffle(indices)
 
@@ -189,38 +190,38 @@ def approxrand(a, b, **kwargs):
             c += 1
 
         if verbose and i % 10 == 0:
-            print 'pseudo-statistic: %f' % pseudo_stat
-            print 'significance: %f' % (float(c + 1) / (i + 1))
-            print '-' * 60
+            print('pseudo-statistic: %f' % pseudo_stat)
+            print('significance: %f' % ((c + 1) / (i + 1)))
+            print('-' * 60)
 
-    significance = float(c + 1) / (shuffles + 1)
+    significance = (c + 1) / (shuffles + 1)
 
     if verbose:
-        print 'significance: %f' % significance
+        print('significance: %f' % significance)
         if betai:
             for phi in [0.01, 0.05, 0.10, 0.15, 0.25, 0.50]:
-                print "prob(phi<=%f): %f" % (phi, betai(c, shuffles, phi))
+                print("prob(phi<=%f): %f" % (phi, betai(c, shuffles, phi)))
 
     return (significance, c, shuffles)
 
 
 def demo():
-    print '-'*75
+    print('-'*75)
     reference = 'DET NN VB DET JJ NN NN IN DET NN'.split()
     test    = 'DET VB VB DET NN NN NN IN DET NN'.split()
-    print 'Reference =', reference
-    print 'Test    =', test
-    print 'Accuracy:', accuracy(reference, test)
+    print('Reference =', reference)
+    print('Test    =', test)
+    print('Accuracy:', accuracy(reference, test))
 
-    print '-'*75
+    print('-'*75)
     reference_set = set(reference)
     test_set = set(test)
-    print 'Reference =', reference_set
-    print 'Test =   ', test_set
-    print 'Precision:', precision(reference_set, test_set)
-    print '   Recall:', recall(reference_set, test_set)
-    print 'F-Measure:', f_measure(reference_set, test_set)
-    print '-'*75
+    print('Reference =', reference_set)
+    print('Test =   ', test_set)
+    print('Precision:', precision(reference_set, test_set))
+    print('   Recall:', recall(reference_set, test_set))
+    print('F-Measure:', f_measure(reference_set, test_set))
+    print('-'*75)
 
 if __name__ == '__main__':
     demo()

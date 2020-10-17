@@ -1,8 +1,8 @@
 # Natural Language Toolkit: Tokenizers
 #
-# Copyright (C) 2001-2012 NLTK Project
-# Author: Edward Loper <edloper@gradient.cis.upenn.edu>
-#         Steven Bird <sb@csse.unimelb.edu.au>
+# Copyright (C) 2001-2016 NLTK Project
+# Author: Edward Loper <edloper@gmail.com>
+#         Steven Bird <stevenbird1@gmail.com>
 #         Trevor Cohn <tacohn@csse.unimelb.edu.au>
 # URL: <http://nltk.sourceforge.net>
 # For license information, see LICENSE.TXT
@@ -65,14 +65,15 @@ argument.  This differs from the conventions used by Python's
 ``re`` functions, where the pattern is always the first argument.
 (This is for consistency with the other NLTK tokenizers.)
 """
+from __future__ import unicode_literals
 
 import re
-import sre_constants
 
-from nltk.internals import convert_regexp_to_nongrouping
 from nltk.tokenize.api import TokenizerI
 from nltk.tokenize.util import regexp_span_tokenize
+from nltk.compat import python_2_unicode_compatible
 
+@python_2_unicode_compatible
 class RegexpTokenizer(TokenizerI):
     """
     A tokenizer that splits a string using a regular expression, which
@@ -82,7 +83,8 @@ class RegexpTokenizer(TokenizerI):
 
     :type pattern: str
     :param pattern: The pattern used to build this tokenizer.
-        (This pattern may safely contain grouping parentheses.)
+        (This pattern must not contain capturing parentheses;
+        Use non-capturing parentheses, e.g. (?:...), instead)
     :type gaps: bool
     :param gaps: True if this tokenizer's pattern should be used
         to find separators between tokens; False if this
@@ -108,19 +110,13 @@ class RegexpTokenizer(TokenizerI):
         self._discard_empty = discard_empty
         self._flags = flags
         self._regexp = None
-
-        # Remove grouping parentheses -- if the regexp contains any
-        # grouping parentheses, then the behavior of re.findall and
-        # re.split will change.
-        nongrouping_pattern = convert_regexp_to_nongrouping(pattern)
-
-        try:
-            self._regexp = re.compile(nongrouping_pattern, flags)
-        except re.error, e:
-            raise ValueError('Error in regular expression %r: %s' %
-                             (pattern, e))
-
+        
+    def _check_regexp(self):
+        if self._regexp is None:
+            self._regexp = re.compile(self._pattern, self._flags)
+        
     def tokenize(self, text):
+        self._check_regexp()
         # If our regexp matches gaps, use re.split:
         if self._gaps:
             if self._discard_empty:
@@ -133,6 +129,8 @@ class RegexpTokenizer(TokenizerI):
             return self._regexp.findall(text)
 
     def span_tokenize(self, text):
+        self._check_regexp()
+
         if self._gaps:
             for left, right in regexp_span_tokenize(text, self._regexp):
                 if not (self._discard_empty and left == right):
@@ -201,7 +199,4 @@ blankline_tokenize = BlanklineTokenizer().tokenize
 wordpunct_tokenize = WordPunctTokenizer().tokenize
 
 
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)
 
