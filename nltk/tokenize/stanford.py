@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Natural Language Toolkit: Interface to the Stanford Tokenizer
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2019 NLTK Project
 # Author: Steven Xu <xxu@student.unimelb.edu.au>
 #
 # URL: <http://nltk.org/>
@@ -23,6 +23,7 @@ from nltk.parse.corenlp import CoreNLPParser
 
 _stanford_url = 'https://nlp.stanford.edu/software/tokenizer.shtml'
 
+
 class StanfordTokenizer(TokenizerI):
     r"""
     Interface to the Stanford Tokenizer
@@ -38,26 +39,41 @@ class StanfordTokenizer(TokenizerI):
 
     _JAR = 'stanford-postagger.jar'
 
-    def __init__(self, path_to_jar=None, encoding='utf8', options=None, verbose=False, java_options='-mx1000m'):
+    def __init__(
+        self,
+        path_to_jar=None,
+        encoding='utf8',
+        options=None,
+        verbose=False,
+        java_options='-mx1000m',
+    ):
         # Raise deprecation warning.
-        warnings.simplefilter('always', DeprecationWarning)
-        warnings.warn(str("\nThe StanfordTokenizer will "
-                          "be deprecated in version 3.2.5.\n"
-                          "Please use \033[91mnltk.parse.corenlp.CoreNLPTokenizer\033[0m instead.'"),
-                      DeprecationWarning, stacklevel=2)
-        warnings.simplefilter('ignore', DeprecationWarning)
+        warnings.warn(
+            str(
+                "\nThe StanfordTokenizer will "
+                "be deprecated in version 3.2.5.\n"
+                "Please use \033[91mnltk.parse.corenlp.CoreNLPParser\033[0m instead.'"
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
         self._stanford_jar = find_jar(
-            self._JAR, path_to_jar,
+            self._JAR,
+            path_to_jar,
             env_vars=('STANFORD_POSTAGGER',),
-            searchpath=(), url=_stanford_url,
-            verbose=verbose
+            searchpath=(),
+            url=_stanford_url,
+            verbose=verbose,
         )
 
         self._encoding = encoding
         self.java_options = java_options
 
         options = {} if options is None else options
-        self._options_cmd = ','.join('{0}={1}'.format(key, val) for key, val in options.items())
+        self._options_cmd = ','.join(
+            '{0}={1}'.format(key, val) for key, val in options.items()
+        )
 
     @staticmethod
     def _parse_tokenized_output(s):
@@ -67,9 +83,7 @@ class StanfordTokenizer(TokenizerI):
         """
         Use stanford tokenizer's PTBTokenizer to tokenize multiple sentences.
         """
-        cmd = [
-            'edu.stanford.nlp.process.PTBTokenizer',
-        ]
+        cmd = ['edu.stanford.nlp.process.PTBTokenizer']
         return self._parse_tokenized_output(self._execute(cmd, s))
 
     def _execute(self, cmd, input_, verbose=False):
@@ -95,8 +109,9 @@ class StanfordTokenizer(TokenizerI):
             cmd.append(input_file.name)
 
             # Run the tagger and get the output.
-            stdout, stderr = java(cmd, classpath=self._stanford_jar,
-                                  stdout=PIPE, stderr=PIPE)
+            stdout, stderr = java(
+                cmd, classpath=self._stanford_jar, stdout=PIPE, stderr=PIPE
+            )
             stdout = stdout.decode(encoding)
 
         os.unlink(input_file.name)
@@ -107,38 +122,12 @@ class StanfordTokenizer(TokenizerI):
         return stdout
 
 
-class CoreNLPTokenizer(CoreNLPParser):
-    def __init__(self, url='http://localhost:9000', encoding='utf8'):
-        r"""
-        This is a duck-type of CoreNLPParser that has the tokenizing
-        functionality similar to the original Stanford POS tagger.
-
-            >>> from nltk.tokenize.stanford import CoreNLPTokenizer
-            >>> s = "Good muffins cost $3.88\nin New York.  Please buy me\ntwo of them.\nThanks."
-            >>> CoreNLPTokenizer(url='http://localhost:9000').tokenize(s) == expected # doctest: +SKIP
-            [u'Good', u'muffins', u'cost', u'$', u'3.88', u'in', u'New', u'York', u'.', u'Please', u'buy', u'me', u'two', u'of', u'them', u'.', u'Thanks', u'.']
-        """
-        super(CoreNLPTokenizer, self).__init__(url, encoding)
-
-    def tokenize(self, text, properties=None):
-        """
-        Tokenize a string of text. Consistent with the StanfordTokenizer, This
-        function returns a list of string. The orignal CoreNLPParser.tokenize()
-        returns a generator of string.
-        """
-        return list(super(CoreNLPTokenizer, self).tokenize(text, properties))
-
-
 def setup_module(module):
     from nose import SkipTest
 
     try:
         StanfordTokenizer()
     except LookupError:
-        raise SkipTest('doctests from nltk.tokenize.stanford are skipped because the stanford postagger jar doesn\'t exist')
-
-    try:
-        CoreNLPTokenizer()
-    except LookupError:
-        raise SkipTest('doctests from nltk.tokenize.stanford.CoreNLPTokenizer are skipped because the '
-                       'stanford corenlp server not started')
+        raise SkipTest(
+            'doctests from nltk.tokenize.stanford are skipped because the stanford postagger jar doesn\'t exist'
+        )

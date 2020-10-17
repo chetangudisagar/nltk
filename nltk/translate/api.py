@@ -1,6 +1,6 @@
 # Natural Language Toolkit: API for alignment and translation objects
 #
-# Copyright (C) 2001-2017 NLTK Project
+# Copyright (C) 2001-2019 NLTK Project
 # Author: Will Zhang <wilzzha@gmail.com>
 #         Guan Gui <ggui@student.unimelb.edu.au>
 #         Steven Bird <stevenbird1@gmail.com>
@@ -21,27 +21,30 @@ class AlignedSent(object):
     Return an aligned sentence object, which encapsulates two sentences
     along with an ``Alignment`` between them.
 
+    Typically used in machine translation to represent a sentence and
+    its translation.
+
         >>> from nltk.translate import AlignedSent, Alignment
         >>> algnsent = AlignedSent(['klein', 'ist', 'das', 'Haus'],
-        ...     ['the', 'house', 'is', 'small'], Alignment.fromstring('0-2 1-3 2-1 3-0'))
+        ...     ['the', 'house', 'is', 'small'], Alignment.fromstring('0-3 1-2 2-0 3-1'))
         >>> algnsent.words
         ['klein', 'ist', 'das', 'Haus']
         >>> algnsent.mots
         ['the', 'house', 'is', 'small']
         >>> algnsent.alignment
-        Alignment([(0, 2), (1, 3), (2, 1), (3, 0)])
+        Alignment([(0, 3), (1, 2), (2, 0), (3, 1)])
         >>> from nltk.corpus import comtrans
         >>> print(comtrans.aligned_sents()[54])
         <AlignedSent: 'Weshalb also sollten...' -> 'So why should EU arm...'>
         >>> print(comtrans.aligned_sents()[54].alignment)
         0-0 0-1 1-0 2-2 3-4 3-5 4-7 5-8 6-3 7-9 8-9 9-10 9-11 10-12 11-6 12-6 13-13
 
-    :param words: source language words
+    :param words: Words in the target language sentence
     :type words: list(str)
-    :param mots: target language words
+    :param mots: Words in the source language sentence
     :type mots: list(str)
-    :param alignment: the word-level alignments between the source
-        and target language
+    :param alignment: Word-level alignments between ``words`` and ``mots``.
+        Each alignment is represented as a 2-tuple (words_index, mots_index).
     :type alignment: Alignment
     """
 
@@ -102,11 +105,17 @@ class AlignedSent(object):
 
         # Connect the source words
         for i in range(len(self._words) - 1):
-            s += '"%s_source" -- "%s_source" [style=invis]\n' % (self._words[i], self._words[i + 1])
+            s += '"%s_source" -- "%s_source" [style=invis]\n' % (
+                self._words[i],
+                self._words[i + 1],
+            )
 
         # Connect the target words
         for i in range(len(self._mots) - 1):
-            s += '"%s_target" -- "%s_target" [style=invis]\n' % (self._mots[i], self._mots[i + 1])
+            s += '"%s_target" -- "%s_target" [style=invis]\n' % (
+                self._mots[i],
+                self._mots[i + 1],
+            )
 
         # Put it in the same rank
         s += '{rank = same; %s}\n' % (' '.join('"%s_source"' % w for w in self._words))
@@ -123,8 +132,12 @@ class AlignedSent(object):
         dot_string = self._to_dot().encode('utf8')
         output_format = 'svg'
         try:
-            process = subprocess.Popen(['dot', '-T%s' % output_format], stdin=subprocess.PIPE,
-                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            process = subprocess.Popen(
+                ['dot', '-T%s' % output_format],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
         except OSError:
             raise Exception('Cannot find the dot binary from Graphviz package')
         out, err = process.communicate(dot_string)
@@ -147,8 +160,7 @@ class AlignedSent(object):
 
         :rtype: AlignedSent
         """
-        return AlignedSent(self._mots, self._words,
-                           self._alignment.invert())
+        return AlignedSent(self._mots, self._words, self._alignment.invert())
 
 
 @python_2_unicode_compatible
@@ -180,7 +192,7 @@ class Alignment(frozenset):
 
     def __new__(cls, pairs):
         self = frozenset.__new__(cls, pairs)
-        self._len = (max(p[0] for p in self) if self != frozenset([]) else 0)
+        self._len = max(p[0] for p in self) if self != frozenset([]) else 0
         self._index = None
         return self
 
@@ -321,8 +333,7 @@ class PhraseTable(object):
         if src_phrase not in self.src_phrases:
             self.src_phrases[src_phrase] = []
         self.src_phrases[src_phrase].append(entry)
-        self.src_phrases[src_phrase].sort(key=lambda e: e.log_prob,
-                                          reverse=True)
+        self.src_phrases[src_phrase].sort(key=lambda e: e.log_prob, reverse=True)
 
     def __contains__(self, src_phrase):
         return src_phrase in self.src_phrases

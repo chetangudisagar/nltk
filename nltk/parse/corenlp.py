@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Natural Language Toolkit: Interface to the CoreNLP REST API.
 #
-# Copyright (C) 2001-2016 NLTK Project
+# Copyright (C) 2001-2019 NLTK Project
 # Author: Dmitrijs Milajevs <dimazest@gmail.com>
 #
 # URL: <http://nltk.org/>
@@ -16,10 +16,13 @@ import socket
 
 from nltk.internals import find_jar_iter, config_java, java, _java_options
 
+from nltk.tag.api import TaggerI
 from nltk.parse.api import ParserI
 from nltk.tokenize.api import TokenizerI
 from nltk.parse.dependencygraph import DependencyGraph
 from nltk.tree import Tree
+
+from unittest import skip
 
 _stanford_url = 'http://stanfordnlp.github.io/CoreNLP/'
 
@@ -44,30 +47,32 @@ class CoreNLPServer(object):
     _JAR = r'stanford-corenlp-(\d+)\.(\d+)\.(\d+)\.jar'
 
     def __init__(
-        self, path_to_jar=None, path_to_models_jar=None, verbose=False,
-        java_options=None, corenlp_options=None, port=None,
+        self,
+        path_to_jar=None,
+        path_to_models_jar=None,
+        verbose=False,
+        java_options=None,
+        corenlp_options=None,
+        port=None,
     ):
 
         if corenlp_options is None:
-            corenlp_options = [
-                '-preload', 'tokenize,ssplit,pos,lemma,parse,depparse',
-            ]
+            corenlp_options = ['-preload', 'tokenize,ssplit,pos,lemma,parse,depparse']
 
-        jars = list(find_jar_iter(
-            self._JAR,
-            path_to_jar,
-            env_vars=('CORENLP', ),
-            searchpath=(),
-            url=_stanford_url,
-            verbose=verbose,
-            is_regex=True,
-        ))
+        jars = list(
+            find_jar_iter(
+                self._JAR,
+                path_to_jar,
+                env_vars=('CORENLP',),
+                searchpath=(),
+                url=_stanford_url,
+                verbose=verbose,
+                is_regex=True,
+            )
+        )
 
         # find the most recent code and model jar
-        stanford_jar = max(
-            jars,
-            key=lambda model_name: re.match(self._JAR, model_name)
-        )
+        stanford_jar = max(jars, key=lambda model_name: re.match(self._JAR, model_name))
 
         if port is None:
             try:
@@ -84,13 +89,13 @@ class CoreNLPServer(object):
             find_jar_iter(
                 self._MODEL_JAR_PATTERN,
                 path_to_models_jar,
-                env_vars=('CORENLP_MODELS', ),
+                env_vars=('CORENLP_MODELS',),
                 searchpath=(),
                 url=_stanford_url,
                 verbose=verbose,
                 is_regex=True,
             ),
-            key=lambda model_name: re.match(self._MODEL_JAR_PATTERN, model_name)
+            key=lambda model_name: re.match(self._MODEL_JAR_PATTERN, model_name),
         )
 
         self.verbose = verbose
@@ -100,7 +105,11 @@ class CoreNLPServer(object):
         self.corenlp_options = corenlp_options
         self.java_options = java_options or ['-mx2g']
 
-    def start(self):
+    def start(self, stdout='devnull', stderr='devnull'):
+        """ Starts the CoreNLP server
+
+        :param stdout, stderr: Specifies where CoreNLP output is redirected. Valid values are 'devnull', 'stdout', 'pipe'
+        """
         import requests
 
         cmd = ['edu.stanford.nlp.pipeline.StanfordCoreNLPServer']
@@ -113,14 +122,12 @@ class CoreNLPServer(object):
         config_java(options=self.java_options, verbose=self.verbose)
 
         try:
-            # TODO: it's probably a bad idea to pipe stdout, as it will
-            #       accumulate when lots of text is being parsed.
             self.popen = java(
                 cmd,
                 classpath=self._classpath,
                 blocking=False,
-                stdout='pipe',
-                stderr='pipe',
+                stdout=stdout,
+                stderr=stderr,
             )
         finally:
             # Return java configurations to their default values.
@@ -133,7 +140,7 @@ class CoreNLPServer(object):
             raise CoreNLPServerError(
                 returncode,
                 'Could not start the server. '
-                'The error was: {}'.format(stderrdata.decode('ascii'))
+                'The error was: {}'.format(stderrdata.decode('ascii')),
             )
 
         for i in range(30):
@@ -145,9 +152,7 @@ class CoreNLPServer(object):
                 if response.ok:
                     break
         else:
-            raise CoreNLPServerError(
-                'Could not connect to the server.'
-            )
+            raise CoreNLPServerError('Could not connect to the server.')
 
         for i in range(60):
             try:
@@ -158,9 +163,7 @@ class CoreNLPServer(object):
                 if response.ok:
                     break
         else:
-            raise CoreNLPServerError(
-                'The server is not ready.'
-            )
+            raise CoreNLPServerError('The server is not ready.')
 
     def stop(self):
         self.popen.terminate()
@@ -176,14 +179,19 @@ class CoreNLPServer(object):
         return False
 
 
-class GenericCoreNLPParser(ParserI, TokenizerI):
+class GenericCoreNLPParser(ParserI, TokenizerI, TaggerI):
     """Interface to the CoreNLP Parser."""
 
-    def __init__(self, url='http://localhost:9000', encoding='utf8'):
+    def __init__(self, url='http://localhost:9000', encoding='utf8', tagtype=None):
         import requests
 
         self.url = url
         self.encoding = encoding
+
+        if tagtype not in ['pos', 'ner', None]:
+            raise ValueError("tagtype must be either 'pos', 'ner' or None")
+
+        self.tagtype = tagtype
 
         self.session = requests.Session()
 
@@ -215,25 +223,20 @@ class GenericCoreNLPParser(ParserI, TokenizerI):
         :type sentence: str
         :rtype: iter(Tree)
         """
-        default_properties = {
-            'tokenize.whitespace': 'false',
-        }
+        default_properties = {'tokenize.whitespace': 'false'}
         default_properties.update(properties or {})
 
         return next(
             self.raw_parse_sents(
-                [sentence],
-                properties=default_properties,
-                *args,
-                **kwargs
+                [sentence], properties=default_properties, *args, **kwargs
             )
         )
 
-    def api_call(self, data, properties=None):
+    def api_call(self, data, properties=None, timeout=60):
         default_properties = {
             'outputFormat': 'json',
             'annotators': 'tokenize,pos,lemma,ssplit,{parser_annotator}'.format(
-                parser_annotator=self.parser_annotator,
+                parser_annotator=self.parser_annotator
             ),
         }
 
@@ -241,11 +244,9 @@ class GenericCoreNLPParser(ParserI, TokenizerI):
 
         response = self.session.post(
             self.url,
-            params={
-                'properties': json.dumps(default_properties),
-            },
+            params={'properties': json.dumps(default_properties)},
             data=data.encode(self.encoding),
-            timeout=60,
+            timeout=timeout,
         )
 
         response.raise_for_status()
@@ -253,12 +254,7 @@ class GenericCoreNLPParser(ParserI, TokenizerI):
         return response.json()
 
     def raw_parse_sents(
-        self,
-        sentences,
-        verbose=False,
-        properties=None,
-        *args,
-        **kwargs
+        self, sentences, verbose=False, properties=None, *args, **kwargs
     ):
         """Parse multiple sentences.
 
@@ -272,7 +268,7 @@ class GenericCoreNLPParser(ParserI, TokenizerI):
         """
         default_properties = {
             # Only splits on '\n', never inside the sentence.
-            'ssplit.ssplit.eolonly': 'true',
+            'ssplit.eolonly': 'true'
         }
 
         default_properties.update(properties or {})
@@ -291,7 +287,6 @@ class GenericCoreNLPParser(ParserI, TokenizerI):
         for parsed_sent in parsed_data['sentences']:
             tree = self.make_tree(parsed_sent)
             yield iter([tree])
-
 
     def parse_text(self, text, *args, **kwargs):
         """Parse a piece of text.
@@ -326,10 +321,7 @@ class GenericCoreNLPParser(ParserI, TokenizerI):
         ['The', 'color', 'of', 'the', 'wall', 'is', 'blue', '.']
 
         """
-        default_properties = {
-            'annotators': 'tokenize,ssplit',
-
-        }
+        default_properties = {'annotators': 'tokenize,ssplit'}
 
         default_properties.update(properties or {})
 
@@ -338,6 +330,70 @@ class GenericCoreNLPParser(ParserI, TokenizerI):
         for sentence in result['sentences']:
             for token in sentence['tokens']:
                 yield token['originalText'] or token['word']
+
+    def tag_sents(self, sentences):
+        """
+        Tag multiple sentences.
+
+        Takes multiple sentences as a list where each sentence is a list of
+        tokens.
+        
+        :param sentences: Input sentences to tag
+        :type sentences: list(list(str))
+        :rtype: list(list(tuple(str, str))
+        """
+        # Converting list(list(str)) -> list(str)
+        sentences = (' '.join(words) for words in sentences)
+        return [sentences[0] for sentences in self.raw_tag_sents(sentences)]
+
+    def tag(self, sentence):
+        """
+        Tag a list of tokens.
+
+        :rtype: list(tuple(str, str))
+
+        >>> parser = CoreNLPParser(url='http://localhost:9000', tagtype='ner')
+        >>> tokens = 'Rami Eid is studying at Stony Brook University in NY'.split()
+        >>> parser.tag(tokens)
+        [('Rami', 'PERSON'), ('Eid', 'PERSON'), ('is', 'O'), ('studying', 'O'), ('at', 'O'), ('Stony', 'ORGANIZATION'),
+        ('Brook', 'ORGANIZATION'), ('University', 'ORGANIZATION'), ('in', 'O'), ('NY', 'O')]
+
+        >>> parser = CoreNLPParser(url='http://localhost:9000', tagtype='pos')
+        >>> tokens = "What is the airspeed of an unladen swallow ?".split()
+        >>> parser.tag(tokens)
+        [('What', 'WP'), ('is', 'VBZ'), ('the', 'DT'),
+        ('airspeed', 'NN'), ('of', 'IN'), ('an', 'DT'),
+        ('unladen', 'JJ'), ('swallow', 'VB'), ('?', '.')]
+        """
+        return self.tag_sents([sentence])[0]
+
+    def raw_tag_sents(self, sentences):
+        """
+        Tag multiple sentences.
+
+        Takes multiple sentences as a list where each sentence is a string.
+        
+        :param sentences: Input sentences to tag
+        :type sentences: list(str)
+        :rtype: list(list(list(tuple(str, str)))
+        """
+        default_properties = {
+            'ssplit.isOneSentence': 'true',
+            'annotators': 'tokenize,ssplit,',
+        }
+
+        # Supports only 'pos' or 'ner' tags.
+        assert self.tagtype in ['pos', 'ner']
+        default_properties['annotators'] += self.tagtype
+        for sentence in sentences:
+            tagged_data = self.api_call(sentence, properties=default_properties)
+            yield [
+                [
+                    (token['word'], token[self.tagtype])
+                    for token in tagged_sentence['tokens']
+                ]
+                for tagged_sentence in tagged_data['sentences']
+            ]
 
 
 class CoreNLPParser(GenericCoreNLPParser):
@@ -693,10 +749,12 @@ def transform(sentence):
         )
 
 
+@skip('Skipping all CoreNLP tests.')
 def setup_module(module):
     from nose import SkipTest
 
     global server
+
     try:
         server = CoreNLPServer(port=9000)
     except LookupError as e:
@@ -712,5 +770,6 @@ def setup_module(module):
         )
 
 
+@skip('Skipping all CoreNLP tests.')
 def teardown_module(module):
     server.stop()
