@@ -1,6 +1,6 @@
 # Natural Language Toolkit: API for Corpus Readers
 #
-# Copyright (C) 2001-2015 NLTK Project
+# Copyright (C) 2001-2016 NLTK Project
 # Author: Steven Bird <stevenbird1@gmail.com>
 #         Edward Loper <edloper@gmail.com>
 # URL: <http://nltk.org/>
@@ -30,7 +30,7 @@ class CorpusReader(object):
     identified by its ``file identifier``, which is the relative path
     to the file from the root directory.
 
-    A separate subclass is be defined for each corpus format.  These
+    A separate subclass is defined for each corpus format.  These
     subclasses define one or more methods that provide 'views' on the
     corpus contents, such as ``words()`` (for a list of words) and
     ``parsed_sents()`` (for a list of parsed sentences).  Called with

@@ -2,7 +2,7 @@
 #
 # Natural Language Toolkit: Sentiment Analyzer
 #
-# Copyright (C) 2001-2015 NLTK Project
+# Copyright (C) 2001-2016 NLTK Project
 # Author: Pierpaolo Pantone <24alsecondo@gmail.com>
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
@@ -167,6 +167,7 @@ class SentimentAnalyzer(object):
         :param kwargs: additional parameters that will be passed as arguments to
             the classifier `train` function.
         :return: A classifier instance trained on the training set.
+        :rtype: 
         """
         print("Training classifier")
         self.classifier = trainer(training_set, **kwargs)
@@ -187,7 +188,7 @@ class SentimentAnalyzer(object):
         :param precision: if `True`, evaluate classifier precision.
         :param recall: if `True`, evaluate classifier recall.
         :return: evaluation results.
-        :rtype: dict
+        :rtype: dict(str): float
         """
         if classifier is None:
             classifier = self.classifier

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Natural Language Toolkit: WordNet
 #
-# Copyright (C) 2001-2015 NLTK Project
+# Copyright (C) 2001-2016 NLTK Project
 # Author: Steven Bethard <Steven.Bethard@colorado.edu>
 #         Steven Bird <stevenbird1@gmail.com>
 #         Edward Loper <edloper@gmail.com>
@@ -1460,7 +1460,7 @@ class WordNetCorpusReader(CorpusReader):
 
     def all_lemma_names(self, pos=None, lang='eng'):
         """Return all lemma names for all synsets for the given
-        part of speech tag and langauge or languages. If pos is not specified, all synsets
+        part of speech tag and language or languages. If pos is not specified, all synsets
         for all parts of speech will be used."""
 
         if lang == 'eng':

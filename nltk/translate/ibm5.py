@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Natural Language Toolkit: IBM Model 5
 #
-# Copyright (C) 2001-2015 NLTK Project
+# Copyright (C) 2001-2016 NLTK Project
 # Author: Tah Wei Hoon <hoon.tw@gmail.com>
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
@@ -275,7 +275,7 @@ class IBMModel5(IBMModel):
         # last available position.
         # Thus, the number of possible vacancy difference values is
         # (max_v) - (1-max_v) + 1 = 2 * max_v.
-        if max_m > 0 and (float(1) / (2 * max_m)) < IBMModel.MIN_PROB:
+        if max_m > 0 and (1 / (2 * max_m)) < IBMModel.MIN_PROB:
             warnings.warn("A target sentence is too long (" + str(max_m) +
                           " words). Results may be less accurate.")
 

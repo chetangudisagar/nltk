@@ -34,6 +34,7 @@
 - Jinyoung Choi
 - Andrew Clausen
 - Lucas Champollion
+- Graham Christensen
 - Trevor Cohn
 - David Coles
 - Lucas Cooper
@@ -57,9 +58,11 @@
 - Jean Mark Gawron
 - Sumukh Ghodke
 - Yoav Goldberg
+- Michael Wayne Goodman
 - Dougal Graham
 - Brent Gray
 - Simon Greenhill
+- Clark Grubb
 - Eduardo Pereira Habkost
 - Masato Hagiwara
 - Lauri Hallila
@@ -132,6 +135,7 @@
 - Ondrej Platek
 - Alessandro Presta
 - Martin Thorsen Ranang
+- Michael Recachinas
 - Brandon Rhodes
 - Joshua Ritterman
 - Will Roberts
@@ -186,3 +190,9 @@
 - bjut-hz
 - Sergio Oller
 - Will Monroe
+- Elijah Rippeth
+- Emil Manukyan
+- Casper Lehmann-Strøm
+- Andrew Giel
+- Tanin Na Nakorn
+- Linghao Zhang

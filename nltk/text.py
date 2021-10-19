@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Texts
 #
-# Copyright (C) 2001-2015 NLTK Project
+# Copyright (C) 2001-2016 NLTK Project
 # Author: Steven Bird <stevenbird1@gmail.com>
 #         Edward Loper <edloper@gmail.com>
 # URL: <http://nltk.org/>
@@ -565,7 +565,7 @@ class TextCollection(Text):
         if idf is None:
             matches = len([True for text in self._texts if term in text])
             # FIXME Should this raise some kind of error instead?
-            idf = (log(float(len(self._texts)) / matches) if matches else 0.0)
+            idf = (log(len(self._texts) / matches) if matches else 0.0)
             self._idf_cache[term] = idf
         return idf
 

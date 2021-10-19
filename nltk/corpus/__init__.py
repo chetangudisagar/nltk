@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Corpus Readers
 #
-# Copyright (C) 2001-2015 NLTK Project
+# Copyright (C) 2001-2016 NLTK Project
 # Author: Edward Loper <edloper@gmail.com>
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
@@ -161,6 +161,8 @@ nps_chat = LazyCorpusLoader(
 opinion_lexicon = LazyCorpusLoader(
     'opinion_lexicon', OpinionLexiconCorpusReader, r'(\w+)\-words\.txt',
     encoding='ISO-8859-2')
+panlex_lite = LazyCorpusLoader(
+    'panlex_lite', PanLexLiteCorpusReader)
 pl196x = LazyCorpusLoader(
     'pl196x', Pl196xCorpusReader, r'[a-z]-.*\.xml',
     cat_file='cats.txt', textid_file='textids.txt', encoding='utf8')
