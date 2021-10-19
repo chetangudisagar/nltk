@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Natural Language Toolkit: WordNet
 #
-# Copyright (C) 2001-2014 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 # Author: Steven Bethard <Steven.Bethard@colorado.edu>
 #         Steven Bird <stevenbird1@gmail.com>
 #         Edward Loper <edloper@gmail.com>
@@ -1616,6 +1616,8 @@ class WordNetCorpusReader(CorpusReader):
                ('ed', 'e'), ('ed', ''), ('ing', 'e'), ('ing', '')],
         ADJ: [('er', ''), ('est', ''), ('er', 'e'), ('est', 'e')],
         ADV: []}
+
+    MORPHOLOGICAL_SUBSTITUTIONS[ADJ_SAT] = MORPHOLOGICAL_SUBSTITUTIONS[ADJ]
 
     def _morphy(self, form, pos):
         # from jordanbg:

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Natural Language Toolkit: Compatibility
 #
-# Copyright (C) 2001-2014 NLTK Project
+# Copyright (C) 2001-2015 NLTK Project
 #
 # URL: <http://nltk.org/>
 # For license information, see LICENSE.TXT
@@ -358,10 +358,19 @@ except ImportError: # python 2.6
 
 # The following datasets have a /PY3 subdirectory containing
 # a full copy of the data which has been re-encoded or repickled.
-_PY3_DATA_UPDATES = ["chunkers/maxent_ne_chunker",
-                     "help/tagsets",
-                     "taggers/maxent_treebank_pos_tagger",
-                     "tokenizers/punkt"]
+
+_PY3_DATA_UPDATES = []
+
+if sys.platform.startswith('win'):
+    _PY3_DATA_UPDATES = ["chunkers\maxent_ne_chunker",
+                         "help\tagsets",
+                         "taggers\maxent_treebank_pos_tagger",
+                         "tokenizers\punkt"]
+else:
+    _PY3_DATA_UPDATES = ["chunkers/maxent_ne_chunker",
+                        "help/tagsets",
+                        "taggers/maxent_treebank_pos_tagger",
+                        "tokenizers/punkt"]
 
 # for use in adding /PY3 to the second (filename) argument
 # of the file pointers in data.py
