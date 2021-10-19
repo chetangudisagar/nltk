@@ -33,7 +33,7 @@ class HunposTagger(TaggerI):
 
     Example:
 
-        >>> from nltk.tag.hunpos import HunposTagger
+        >>> from nltk.tag import HunposTagger
         >>> ht = HunposTagger('en_wsj.model')
         >>> ht.tag('What is the airspeed of an unladen swallow ?'.split())
         [('What', 'WP'), ('is', 'VBZ'), ('the', 'DT'), ('airspeed', 'NN'), ('of', 'IN'), ('an', 'DT'), ('unladen', 'NN'), ('swallow', 'VB'), ('?', '.')]
@@ -130,6 +130,3 @@ def setup_module(module):
     except LookupError:
         raise SkipTest("HunposTagger is not available")
 
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)

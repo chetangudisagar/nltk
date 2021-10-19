@@ -24,7 +24,7 @@ class CRFTagger(TaggerI):
     """
     A module for POS tagging using CRFSuite https://pypi.python.org/pypi/python-crfsuite
     
-    >>> from nltk.tag.crf import CRFTagger
+    >>> from nltk.tag import CRFTagger
     >>> ct = CRFTagger()
  
     >>> train_data = [[('University','Noun'), ('is','Verb'), ('a','Det'), ('good','Adj'), ('place','Noun')],
@@ -198,6 +198,3 @@ class CRFTagger(TaggerI):
         
         return self.tag_sents([tokens])[0]
 
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)

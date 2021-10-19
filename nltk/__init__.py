@@ -94,6 +94,17 @@ try:
 except ImportError:
     pass
 
+# Override missing methods on environments where it cannot be used like GAE.
+import subprocess
+if not hasattr(subprocess, 'PIPE'):
+    def _fake_PIPE(*args, **kwargs):
+        raise NotImplementedError('subprocess.PIPE is not supported.')
+    subprocess.PIPE = _fake_PIPE
+if not hasattr(subprocess, 'Popen'):
+    def _fake_Popen(*args, **kwargs):
+        raise NotImplementedError('subprocess.Popen is not supported.')
+    subprocess.Popen = _fake_Popen
+
 ###########################################################
 # TOP-LEVEL MODULES
 ###########################################################
@@ -119,7 +130,6 @@ from nltk.chunk import *
 from nltk.classify import *
 from nltk.inference import *
 from nltk.metrics import *
-from nltk.model import *
 from nltk.parse import *
 from nltk.tag import *
 from nltk.tokenize import *
@@ -166,7 +176,7 @@ else:
 
 from nltk import align, ccg, chunk, classify, collocations
 from nltk import data, featstruct, grammar, help, inference, metrics
-from nltk import misc, model, parse, probability, sem, stem, wsd
+from nltk import misc, parse, probability, sem, stem, wsd
 from nltk import tag, tbl, text, tokenize, tree, treetransforms, util
 
 # override any accidentally imported demo
