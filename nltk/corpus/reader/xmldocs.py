@@ -1,8 +1,8 @@
 # Natural Language Toolkit: XML Corpus Reader
 #
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Author: Steven Bird <stevenbird1@gmail.com>
-# URL: <http://nltk.org/>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 
 """
@@ -12,21 +12,13 @@ Corpus reader for corpora whose documents are xml files.
 """
 
 import codecs
-
-# Use the c version of ElementTree, which is faster, if possible:
-try:
-    from xml.etree import cElementTree as ElementTree
-except ImportError:
-    from xml.etree import ElementTree
-
-from six import string_types
-
-from nltk.data import SeekableUnicodeStreamReader
-from nltk.tokenize import WordPunctTokenizer
-from nltk.internals import ElementWrapper
+from xml.etree import ElementTree
 
 from nltk.corpus.reader.api import CorpusReader
 from nltk.corpus.reader.util import *
+from nltk.data import SeekableUnicodeStreamReader
+from nltk.internals import ElementWrapper
+from nltk.tokenize import WordPunctTokenizer
 
 
 class XMLCorpusReader(CorpusReader):
@@ -46,10 +38,11 @@ class XMLCorpusReader(CorpusReader):
         # Make sure we have exactly one file -- no concatenating XML.
         if fileid is None and len(self._fileids) == 1:
             fileid = self._fileids[0]
-        if not isinstance(fileid, string_types):
+        if not isinstance(fileid, str):
             raise TypeError("Expected a single file identifier string")
         # Read the XML in using ElementTree.
-        elt = ElementTree.parse(self.abspath(fileid).open()).getroot()
+        with self.abspath(fileid).open() as fp:
+            elt = ElementTree.parse(fp).getroot()
         # If requested, wrap it.
         if self._wrap_etree:
             elt = ElementWrapper(elt)
@@ -69,7 +62,10 @@ class XMLCorpusReader(CorpusReader):
         elt = self.xml(fileid)
         encoding = self.encoding(fileid)
         word_tokenizer = WordPunctTokenizer()
-        iterator = elt.getiterator()
+        try:
+            iterator = elt.getiterator()
+        except:
+            iterator = elt.iter()
         out = []
 
         for node in iterator:
@@ -80,13 +76,6 @@ class XMLCorpusReader(CorpusReader):
                 toks = word_tokenizer.tokenize(text)
                 out.extend(toks)
         return out
-
-    def raw(self, fileids=None):
-        if fileids is None:
-            fileids = self._fileids
-        elif isinstance(fileids, string_types):
-            fileids = [fileids]
-        return concat([self.open(f).read() for f in fileids])
 
 
 class XMLCorpusView(StreamBackedCorpusView):
@@ -181,10 +170,10 @@ class XMLCorpusView(StreamBackedCorpusView):
             return "utf-32-le"
         if s.startswith(codecs.BOM_UTF8):
             return "utf-8"
-        m = re.match(br'\s*<\?xml\b.*\bencoding="([^"]+)"', s)
+        m = re.match(rb'\s*<\?xml\b.*\bencoding="([^"]+)"', s)
         if m:
             return m.group(1).decode()
-        m = re.match(br"\s*<\?xml\b.*\bencoding='([^']+)'", s)
+        m = re.match(rb"\s*<\?xml\b.*\bencoding='([^']+)'", s)
         if m:
             return m.group(1).decode()
         # No encoding found -- what should the default be?
@@ -229,10 +218,10 @@ class XMLCorpusView(StreamBackedCorpusView):
 
     #: A regular expression used to extract the tag name from a start tag,
     #: end tag, or empty-elt tag string.
-    _XML_TAG_NAME = re.compile("<\s*/?\s*([^\s>]+)")
+    _XML_TAG_NAME = re.compile(r"<\s*(?:/\s*)?([^\s>]+)")
 
     #: A regular expression used to find all start-tags, end-tags, and
-    #: emtpy-elt tags in an XML file.  This regexp is more lenient than
+    #: empty-elt tags in an XML file.  This regexp is more lenient than
     #: the XML spec -- e.g., it allows spaces in some places where the
     #: spec does not.
     _XML_PIECE = re.compile(
@@ -334,7 +323,7 @@ class XMLCorpusView(StreamBackedCorpusView):
             # Process each <tag> in the xml fragment.
             for piece in self._XML_PIECE.finditer(xml_fragment):
                 if self._DEBUG:
-                    print("%25s %s" % ("/".join(context)[-20:], piece.group()))
+                    print("{:>25} {}".format("/".join(context)[-20:], piece.group()))
 
                 if piece.group("START_TAG"):
                     name = self._XML_TAG_NAME.match(piece.group()).group(1)
@@ -352,9 +341,7 @@ class XMLCorpusView(StreamBackedCorpusView):
                     if not context:
                         raise ValueError("Unmatched tag </%s>" % name)
                     if name != context[-1]:
-                        raise ValueError(
-                            "Unmatched tag <%s>...</%s>" % (context[-1], name)
-                        )
+                        raise ValueError(f"Unmatched tag <{context[-1]}>...</{name}>")
                     # Is this the end of an element?
                     if elt_start is not None and elt_depth == len(context):
                         elt_text += xml_fragment[elt_start : piece.end()]

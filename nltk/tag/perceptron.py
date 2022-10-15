@@ -1,21 +1,21 @@
-# -*- coding: utf-8 -*-
 # This module is a port of the Textblob Averaged Perceptron Tagger
 # Author: Matthew Honnibal <honnibal+gh@gmail.com>,
 #         Long Duong <longdt219@gmail.com> (NLTK port)
 # URL: <https://github.com/sloria/textblob-aptagger>
-#      <http://nltk.org/>
+#      <https://www.nltk.org/>
 # Copyright 2013 Matthew Honnibal
 # NLTK modifications Copyright 2015 The NLTK Project
 #
 # This module is provided under the terms of the MIT License.
 
+import logging
+import pickle
 import random
 from collections import defaultdict
-import pickle
-import logging
 
-from nltk.tag.api import TaggerI
+from nltk import jsontags
 from nltk.data import find, load
+from nltk.tag.api import TaggerI
 
 try:
     import numpy as np
@@ -25,7 +25,8 @@ except ImportError:
 PICKLE = "averaged_perceptron_tagger.pickle"
 
 
-class AveragedPerceptron(object):
+@jsontags.register_tag
+class AveragedPerceptron:
 
     """An averaged perceptron, as implemented by Matthew Honnibal.
 
@@ -33,9 +34,11 @@ class AveragedPerceptron(object):
         https://explosion.ai/blog/part-of-speech-pos-tagger-in-python
     """
 
-    def __init__(self):
+    json_tag = "nltk.tag.perceptron.AveragedPerceptron"
+
+    def __init__(self, weights=None):
         # Each feature gets its own weight vector, so weights is a dict-of-dicts
-        self.weights = {}
+        self.weights = weights if weights else {}
         self.classes = set()
         # The accumulated values, for the averaging. These will be keyed by
         # feature/clas tuples
@@ -108,13 +111,21 @@ class AveragedPerceptron(object):
         """Load the pickled model weights."""
         self.weights = load(path)
 
+    def encode_json_obj(self):
+        return self.weights
 
+    @classmethod
+    def decode_json_obj(cls, obj):
+        return cls(obj)
+
+
+@jsontags.register_tag
 class PerceptronTagger(TaggerI):
 
     """
     Greedy Averaged Perceptron tagger, as implemented by Matthew Honnibal.
     See more implementation details here:
-        https://explosion.ai/blog/part-of-speech-pos-tagger-in-python
+    https://explosion.ai/blog/part-of-speech-pos-tagger-in-python
 
     >>> from nltk.tag.perceptron import PerceptronTagger
 
@@ -138,6 +149,8 @@ class PerceptronTagger(TaggerI):
     >>> pretrain.tag("The red cat".split())
     [('The', 'DT'), ('red', 'JJ'), ('cat', 'NN')]
     """
+
+    json_tag = "nltk.tag.sequential.PerceptronTagger"
 
     START = ["-START-", "-START2-"]
     END = ["-END-", "-END2-"]
@@ -217,7 +230,7 @@ class PerceptronTagger(TaggerI):
                     c += guess == tags[i]
                     n += 1
             random.shuffle(self._sentences)
-            logging.info("Iter {0}: {1}/{2}={3}".format(iter_, c, n, _pc(c, n)))
+            logging.info(f"Iter {iter_}: {c}/{n}={_pc(c, n)}")
 
         # We don't need the training sentences anymore, and we don't want to
         # waste space on them when we pickle the trained tagger.
@@ -239,6 +252,17 @@ class PerceptronTagger(TaggerI):
         self.model.weights, self.tagdict, self.classes = load(loc)
         self.model.classes = self.classes
 
+    def encode_json_obj(self):
+        return self.model.weights, self.tagdict, list(self.classes)
+
+    @classmethod
+    def decode_json_obj(cls, obj):
+        tagger = cls(load=False)
+        tagger.model.weights, tagger.tagdict, tagger.classes = obj
+        tagger.classes = set(tagger.classes)
+        tagger.model.classes = tagger.classes
+        return tagger
+
     def normalize(self, word):
         """
         Normalization used in pre-processing.
@@ -250,12 +274,11 @@ class PerceptronTagger(TaggerI):
         """
         if "-" in word and word[0] != "-":
             return "!HYPHEN"
-        elif word.isdigit() and len(word) == 4:
+        if word.isdigit() and len(word) == 4:
             return "!YEAR"
-        elif word[0].isdigit():
+        if word and word[0].isdigit():
             return "!DIGITS"
-        else:
-            return word.lower()
+        return word.lower()
 
     def _get_features(self, i, word, context, prev, prev2):
         """Map tokens into a feature representation, implemented as a
@@ -271,7 +294,7 @@ class PerceptronTagger(TaggerI):
         # It's useful to have a constant feature, which acts sort of like a prior
         add("bias")
         add("i suffix", word[-3:])
-        add("i pref1", word[0])
+        add("i pref1", word[0] if word else "")
         add("i-1 tag", prev)
         add("i-2 tag", prev2)
         add("i tag+i-2 tag", prev, prev2)
@@ -340,7 +363,7 @@ def _get_pretrain_model():
     print("Size of training and testing (sentence)", len(training), len(testing))
     # Train and save the model
     tagger.train(training, PICKLE)
-    print("Accuracy : ", tagger.evaluate(testing))
+    print("Accuracy : ", tagger.accuracy(testing))
 
 
 if __name__ == "__main__":

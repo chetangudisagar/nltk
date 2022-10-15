@@ -1,8 +1,8 @@
 # Natural Language Toolkit: Interface to Megam Classifier
 #
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Author: Edward Loper <edloper@gmail.com>
-# URL: <http://nltk.org/>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 
 """
@@ -20,11 +20,9 @@ for details.
 
     nltk.classify.MaxentClassifier.train(corpus, 'megam')
 
-.. _megam: http://www.umiacs.umd.edu/~hal/megam/index.html
+.. _megam: https://www.umiacs.umd.edu/~hal/megam/index.html
 """
 import subprocess
-
-from six import string_types
 
 from nltk.internals import find_binary
 
@@ -56,7 +54,7 @@ def config_megam(bin=None):
         bin,
         env_vars=["MEGAM"],
         binary_names=["megam.opt", "megam", "megam_686", "megam_i686.opt"],
-        url="http://www.umiacs.umd.edu/~hal/megam/index.html",
+        url="https://www.umiacs.umd.edu/~hal/megam/index.html",
     )
 
 
@@ -97,7 +95,7 @@ def write_megam_file(train_toks, encoding, stream, bernoulli=True, explicit=True
     """
     # Look up the set of labels.
     labels = encoding.labels()
-    labelnum = dict((label, i) for (i, label) in enumerate(labels))
+    labelnum = {label: i for (i, label) in enumerate(labels)}
 
     # Write the file, which contains one line per instance.
     for featureset, label in train_toks:
@@ -157,14 +155,14 @@ def _write_megam_features(vector, stream, bernoulli):
                     "If bernoulli=True, then all" "features must be binary."
                 )
         else:
-            stream.write(" %s %s" % (fid, fval))
+            stream.write(f" {fid} {fval}")
 
 
 def call_megam(args):
     """
     Call the ``megam`` binary with the given arguments.
     """
-    if isinstance(args, string_types):
+    if isinstance(args, str):
         raise TypeError("args should be a list of strings")
     if _megam_bin is None:
         config_megam()
@@ -180,7 +178,7 @@ def call_megam(args):
         print(stderr)
         raise OSError("megam command failed!")
 
-    if isinstance(stdout, string_types):
+    if isinstance(stdout, str):
         return stdout
     else:
         return stdout.decode("utf-8")

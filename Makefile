@@ -1,9 +1,9 @@
 # Natural Language Toolkit: source Makefile
 #
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Author: Steven Bird <stevenbird1@gmail.com>
 #	 Edward Loper <edloper@gmail.com>
-# URL: <http://nltk.org/>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 
 PYTHON = python
@@ -17,16 +17,14 @@ all: dist
 ########################################################################
 # TESTING
 ########################################################################
-
-DOCTEST_DRIVER = nltk/test/runtests.py
 DOCTEST_FILES = nltk/test/*.doctest
 DOCTEST_CODE_FILES = nltk/*.py nltk/*/*.py
 
 doctest:
-	$(PYTHON) $(DOCTEST_DRIVER) $(DOCTEST_FILES)
+	pytest $(DOCTEST_FILES)
 
 doctest_code:
-	$(PYTHON) $(DOCTEST_DRIVER) $(DOCTEST_CODE_FILES)
+	pytest $(DOCTEST_CODE_FILES)
 
 demotest:
 	find nltk -name "*.py"\
@@ -38,13 +36,13 @@ demotest:
 # DISTRIBUTIONS
 ########################################################################
 
-dist: zipdist windist
+dist: zipdist
 
 # twine only permits one source distribution
 #gztardist: clean_code
 #	$(PYTHON) setup.py -q sdist --format=gztar
 zipdist: clean_code
-	$(PYTHON) setup.py -q sdist --format=zip
+	$(PYTHON) setup.py -q sdist --format=zip bdist_wheel
 windist: clean_code
 	$(PYTHON) setup.py -q bdist --format=wininst --plat-name=win32
 
@@ -53,10 +51,11 @@ windist: clean_code
 ########################################################################
 
 clean: clean_code
-	rm -rf build iso dist api MANIFEST nltk-$(VERSION) nltk.egg-info
+	rm -rf build web/_build iso dist api MANIFEST nltk-$(VERSION) nltk.egg-info
 
 clean_code:
 	rm -f `find nltk -name '*.pyc'`
 	rm -f `find nltk -name '*.pyo'`
 	rm -f `find . -name '*~'`
+	rm -rf `find . -name '__pycache__'`
 	rm -f MANIFEST # regenerate manifest from MANIFEST.in

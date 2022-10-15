@@ -6,9 +6,9 @@
 - Edward Loper <edloper@gmail.com>
 - Ewan Klein <ewan@inf.ed.ac.uk>
 
-
 ## Contributors
 
+- Tom Aarsen
 - Rami Al-Rfou'
 - Mark Amery
 - Greg Aumann
@@ -37,6 +37,7 @@
 - Graham Christensen
 - Trevor Cohn
 - David Coles
+- Tom Conroy <https://github.com/tconroy>
 - Claude Coulombe
 - Lucas Cooper
 - Robin Cooper
@@ -57,6 +58,7 @@
 - Campion Fellin
 - Michelle Fullwood
 - Dan Garrette
+- Maciej Gawinecki
 - Jean Mark Gawron
 - Sumukh Ghodke
 - Yoav Goldberg
@@ -89,6 +91,7 @@
 - Edward Ivanovic
 - Thomas Jakobsen
 - Nick Johnson
+- Eric Kafe
 - Piotr Kasprzyk
 - Angelos Katharopoulos
 - Sudharshan Kaushik
@@ -119,6 +122,7 @@
 - Mitch Marcus
 - Torsten Marek
 - Robert Marshall
+- Marius Mather
 - Duncan McGreggor
 - David McClosky
 - Xinfan Meng
@@ -226,6 +230,7 @@
 - Ali Abdullah
 - Stoytcho Stoytchev
 - Lakhdar Benzahia
+- Kheireddine Abainia <https://github.com/xprogramer>
 - Yibin Lin <https://github.com/yibinlin>
 - Artiem Krinitsyn
 - Björn Mattsson
@@ -257,21 +262,52 @@
 - Gerhard Kremer <https://github.com/GerhardKa>
 - Nicolas Darr <https://github.com/ndarr>
 - Hervé Nicol <https://github.com/hervenicol>
-
+- Alexandre H. T. Dias <https://github.com/alexandredias3d>
+- Daksh Shah <https://github.com/Daksh>
+- Jacob Weightman <https://github.com/jacobdweightman>
+- Bonifacio de Oliveira <https://github.com/Bonifacio2>
+- Armins Bagrats Stepanjans <https://github.com/ab-10>
+- Vassilis Palassopoulos <https://github.com/palasso>
+- Ram Rachum <https://github.com/cool-RR>
+- Or Sharir <https://github.com/orsharir>
+- Denali Molitor <https://github.com/dmmolitor>
+- Jacob Moorman <https://github.com/jdmoorman>
+- Cory Nezin <https://github.com/corynezin>
+- Matt Chaput
+- Danny Sepler <https://github.com/dannysepler>
+- Akshita Bhagia <https://github.com/AkshitaB>
+- Pratap Yadav <https://github.com/prtpydv>
+- Hiroki Teranishi <https://github.com/chantera>
+- Ruben Cartuyvels <https://github.com/rubencart>
+- Dalton Pearson <https://github.com/daltonpearson>
+- Robby Horvath <https://github.com/robbyhorvath>
+- Gavish Poddar <https://github.com/gavishpoddar>
+- Saibo Geng <https://github.com/Saibo-creator>
+- Ahmet Yildirim <https://github.com/RnDevelover>
+- Yuta Nakamura <https://github.com/yutanakamura-tky>
+- Adam Hawley <https://github.com/adamjhawley>
+- Panagiotis Simakis <https://github.com/sp1thas>
+- Richard Wang <https://github.com/richarddwang>
+- Alexandre Perez-Lebel <https://github.com/aperezlebel>
+- Fernando Carranza <https://github.com/fernandocar86>
+- Martin Kondratzky <https://github.com/martinkondra>
+- Heungson Lee <https://github.com/heungson>
+- M.K. Pawelkiewicz <https://github.com/hamiltonianflow>
+- Steven Thomas Smith <https://github.com/essandess>
+- Jan Lennartz <https://github.com/Madnex>
 
 ## Others whose work we've taken and included in NLTK, but who didn't directly contribute it:
+
 ### Contributors to the Porter Stemmer
+
 - Martin Porter
 - Vivake Gupta
 - Barry Wilkins
 - Hiranmay Ghosh
 - Chris Emerson
 
-### Contributors to Lancaster Stemmer
-- Matt Chaput, [Whoosh](https://bitbucket.org/mchaput/whoosh/wiki/Home)
-    - Strip prefix
-    - Custom rule.
 ### Authors of snowball arabic stemmer algorithm
+
 - Assem Chelli
 - Abdelkrim Aries
 - Lakhdar Benzahia

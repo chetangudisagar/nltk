@@ -1,16 +1,15 @@
 # Natural Language Toolkit: Shift-Reduce Parser
 #
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Author: Edward Loper <edloper@gmail.com>
 #         Steven Bird <stevenbird1@gmail.com>
-# URL: <http://nltk.org/>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 
 from nltk.grammar import Nonterminal
-from nltk.tree import Tree
-from nltk.compat import unicode_repr
-
 from nltk.parse.api import ParserI
+from nltk.tree import Tree
+
 
 ##//////////////////////////////////////////////////////
 ##  Shift/Reduce Parser
@@ -227,9 +226,9 @@ class ShiftReduceParser(ParserI):
         s = "  " + marker + " [ "
         for elt in stack:
             if isinstance(elt, Tree):
-                s += unicode_repr(Nonterminal(elt.label())) + " "
+                s += repr(Nonterminal(elt.label())) + " "
             else:
-                s += unicode_repr(elt) + " "
+                s += repr(elt) + " "
         s += "* " + " ".join(remaining_text) + "]"
         print(s)
 
@@ -255,7 +254,7 @@ class ShiftReduceParser(ParserI):
         """
         if self._trace > 2:
             rhs = " ".join(production.rhs())
-            print("Reduce %r <- %s" % (production.lhs(), rhs))
+            print(f"Reduce {production.lhs()!r} <- {rhs}")
         if self._trace == 2:
             self._trace_stack(stack, remaining_text, "R")
         elif self._trace > 1:
@@ -304,7 +303,7 @@ class SteppingShiftReduceParser(ShiftReduceParser):
     """
 
     def __init__(self, grammar, trace=0):
-        super(SteppingShiftReduceParser, self).__init__(grammar, trace)
+        super().__init__(grammar, trace)
         self._stack = None
         self._remaining_text = None
         self._history = []
@@ -453,7 +452,7 @@ def demo():
     A demonstration of the shift-reduce parser.
     """
 
-    from nltk import parse, CFG
+    from nltk import CFG, parse
 
     grammar = CFG.fromstring(
         """

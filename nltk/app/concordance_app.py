@@ -1,47 +1,45 @@
 # Natural Language Toolkit: Concordance Application
 #
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Author: Sumukh Ghodke <sghodke@csse.unimelb.edu.au>
-# URL: <http://nltk.org/>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 
+import queue as q
 import re
 import threading
-
-from six.moves import queue as q
-from six.moves.tkinter_font import Font
-from six.moves.tkinter import (
-    Tk,
-    Button,
+from tkinter import (
     END,
+    LEFT,
+    SUNKEN,
+    Button,
     Entry,
     Frame,
     IntVar,
-    LEFT,
     Label,
     Menu,
     OptionMenu,
-    SUNKEN,
     Scrollbar,
     StringVar,
     Text,
+    Tk,
 )
+from tkinter.font import Font
 
-import nltk.compat
 from nltk.corpus import (
-    cess_cat,
-    brown,
-    nps_chat,
-    treebank,
-    sinica_treebank,
     alpino,
-    indian,
-    floresta,
-    mac_morpho,
+    brown,
+    cess_cat,
     cess_esp,
+    floresta,
+    indian,
+    mac_morpho,
+    nps_chat,
+    sinica_treebank,
+    treebank,
 )
-from nltk.util import in_idle
 from nltk.draw.util import ShowText
+from nltk.util import in_idle
 
 WORD_OR_TAG = "[^/ ]+"
 BOUNDARY = r"\b"
@@ -117,7 +115,7 @@ _CORPORA = {
 }
 
 
-class ConcordanceSearchView(object):
+class ConcordanceSearchView:
     _BACKGROUND_COLOUR = "#FFF"  # white
 
     # Colour of highlighted results
@@ -399,7 +397,7 @@ class ConcordanceSearchView(object):
         ABOUT = "NLTK Concordance Search Demo\n"
         TITLE = "About: NLTK Concordance Search Demo"
         try:
-            from six.moves.tkinter_messagebox import Message
+            from tkinter.messagebox import Message
 
             Message(message=ABOUT, title=TITLE, parent=self.main_frame).show()
         except:
@@ -580,7 +578,7 @@ class ConcordanceSearchView(object):
         self.top.mainloop(*args, **kwargs)
 
 
-class ConcordanceSearchModel(object):
+class ConcordanceSearchModel:
     def __init__(self, queue):
         self.queue = queue
         self.CORPORA = _CORPORA

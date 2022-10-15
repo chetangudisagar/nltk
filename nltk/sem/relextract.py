@@ -1,8 +1,8 @@
 # Natural Language Toolkit: Relation Extraction
 #
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Author: Ewan Klein <ewan@inf.ed.ac.uk>
-# URL: <http://nltk.org/>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 
 """
@@ -22,10 +22,9 @@ The two serialization outputs are "rtuple" and "clause".
 
 # todo: get a more general solution to canonicalized symbols for clauses -- maybe use xmlcharrefs?
 
-from collections import defaultdict
+import html
 import re
-
-from six.moves import html_entities
+from collections import defaultdict
 
 # Dictionary that associates corpora with NE classes
 NE_CLASSES = {
@@ -102,7 +101,7 @@ def _join(lst, sep=" ", untag=False):
         return sep.join(tuple2str(tup) for tup in lst)
 
 
-def descape_entity(m, defs=html_entities.entitydefs):
+def descape_entity(m, defs=html.entities.entitydefs):
     """
     Translate one entity to its ISO Latin value.
     Inspired by example from effbot.org
@@ -125,7 +124,7 @@ def list2sym(lst):
     """
     sym = _join(lst, "_", untag=True)
     sym = sym.lower()
-    ENT = re.compile("&(\w+?);")
+    ENT = re.compile(r"&(\w+?);")
     sym = ENT.sub(descape_entity, sym)
     sym = sym.replace(".", "")
     return sym
@@ -320,7 +319,6 @@ def in_demo(trace=0, sql=True):
             import sqlite3
 
             connection = sqlite3.connect(":memory:")
-            connection.text_factory = sqlite3.OptimizedUnicode
             cur = connection.cursor()
             cur.execute(
                 """create table Locations
@@ -379,7 +377,7 @@ def in_demo(trace=0, sql=True):
 def roles_demo(trace=0):
     from nltk.corpus import ieer
 
-    roles = """
+    roles = r"""
     (.*(                   # assorted roles
     analyst|
     chair(wo)?man|
@@ -526,7 +524,7 @@ def ne_chunked():
         sent = nltk.ne_chunk(sent)
         rels = extract_rels("PER", "ORG", sent, corpus="ace", pattern=ROLE, window=7)
         for rel in rels:
-            print("{0:<5}{1}".format(i, rtuple(rel)))
+            print(f"{i:<5}{rtuple(rel)}")
 
 
 if __name__ == "__main__":

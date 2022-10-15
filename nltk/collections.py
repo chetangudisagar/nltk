@@ -1,21 +1,18 @@
 # Natural Language Toolkit: Collections
 #
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Author: Steven Bird <stevenbird1@gmail.com>
-# URL: <http://nltk.org/>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 
 import bisect
-from itertools import islice, chain
-from functools import total_ordering
 
 # this unused import is for python 2.7
-from collections import defaultdict, deque, Counter
+from collections import Counter, defaultdict, deque
+from functools import total_ordering
+from itertools import chain, islice
 
-from six import text_type
-
-from nltk.internals import slice_bounds, raise_unorderable_types
-
+from nltk.internals import raise_unorderable_types, slice_bounds
 
 ##########################################################################
 # Ordered Dictionary
@@ -119,7 +116,7 @@ class OrderedDict(dict):
 
 
 @total_ordering
-class AbstractLazySequence(object):
+class AbstractLazySequence:
     """
     An abstract base class for read-only sequences whose values are
     computed as needed.  Lazy sequences act like tuples -- they can be
@@ -173,8 +170,8 @@ class AbstractLazySequence(object):
             # Use iterate_from to extract it.
             try:
                 return next(self.iterate_from(i))
-            except StopIteration:
-                raise IndexError("index out of range")
+            except StopIteration as e:
+                raise IndexError("index out of range") from e
 
     def __iter__(self):
         """Return an iterator that generates the tokens in the corpus
@@ -230,8 +227,8 @@ class AbstractLazySequence(object):
             pieces.append(repr(elt))
             length += len(pieces[-1]) + 2
             if length > self._MAX_REPR_SIZE and len(pieces) > 2:
-                return "[%s, ...]" % text_type(", ").join(pieces[:-1])
-        return "[%s]" % text_type(", ").join(pieces)
+                return "[%s, ...]" % ", ".join(pieces[:-1])
+        return "[%s]" % ", ".join(pieces)
 
     def __eq__(self, other):
         return type(self) == type(other) and list(self) == list(other)
@@ -307,7 +304,7 @@ class LazyConcatenation(AbstractLazySequence):
 
     def __len__(self):
         if len(self._offsets) <= len(self._list):
-            for tok in self.iterate_from(self._offsets[-1]):
+            for _ in self.iterate_from(self._offsets[-1]):
                 pass
         return self._offsets[-1]
 
@@ -329,15 +326,14 @@ class LazyConcatenation(AbstractLazySequence):
             if sublist_index == (len(self._offsets) - 1):
                 assert (
                     index + len(sublist) >= self._offsets[-1]
-                ), "offests not monotonic increasing!"
+                ), "offsets not monotonic increasing!"
                 self._offsets.append(index + len(sublist))
             else:
                 assert self._offsets[sublist_index + 1] == index + len(
                     sublist
                 ), "inconsistent list value (num elts)"
 
-            for value in sublist[max(0, start_index - index) :]:
-                yield value
+            yield from sublist[max(0, start_index - index) :]
 
             index += len(sublist)
             sublist_index += 1
@@ -466,8 +462,8 @@ class LazyMap(AbstractLazySequence):
             # Calculate the value
             try:
                 val = next(self.iterate_from(index))
-            except StopIteration:
-                raise IndexError("index out of range")
+            except StopIteration as e:
+                raise IndexError("index out of range") from e
             # Update the cache
             if self._cache is not None:
                 if len(self._cache) > self._cache_size:
@@ -532,7 +528,7 @@ class LazyZip(LazyMap):
 
 class LazyEnumerate(LazyZip):
     """
-    A lazy sequence whose elements are tuples, each ontaining a count (from
+    A lazy sequence whose elements are tuples, each containing a count (from
     zero) and a value yielded by underlying sequence.  ``LazyEnumerate`` is
     useful for obtaining an indexed list. The tuples are constructed lazily
     -- i.e., when you read a value from the list, ``LazyEnumerate`` will
@@ -582,7 +578,7 @@ class LazyIteratorList(AbstractLazySequence):
     def __len__(self):
         if self._len:
             return self._len
-        for x in self.iterate_from(len(self._cache)):
+        for _ in self.iterate_from(len(self._cache)):
             pass
         self._len = len(self._cache)
         return self._len
@@ -596,11 +592,13 @@ class LazyIteratorList(AbstractLazySequence):
         while i < len(self._cache):
             yield self._cache[i]
             i += 1
-        while True:
-            v = next(self._it)
-            self._cache.append(v)
-            yield v
-            i += 1
+        try:
+            while True:
+                v = next(self._it)
+                self._cache.append(v)
+                yield v
+        except StopIteration:
+            pass
 
     def __add__(self, other):
         """Return a list concatenating self with other."""
@@ -631,7 +629,7 @@ class Trie(dict):
         :type strings: list(str)
 
         """
-        super(Trie, self).__init__()
+        super().__init__()
         if strings:
             for string in strings:
                 self.insert(string)

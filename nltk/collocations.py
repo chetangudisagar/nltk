@@ -1,15 +1,15 @@
 # Natural Language Toolkit: Collocations and Association Measures
 #
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Author: Joel Nothman <jnothman@student.usyd.edu.au>
-# URL: <http://nltk.org>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 #
 """
 Tools to identify collocations --- words that often appear consecutively
 --- within corpora. They may also be used to find other associations between
 word occurrences.
-See Manning and Schutze ch. 5 at http://nlp.stanford.edu/fsnlp/promo/colloc.pdf
+See Manning and Schutze ch. 5 at https://nlp.stanford.edu/fsnlp/promo/colloc.pdf
 and the Text::NSP Perl package at http://ngram.sourceforge.net
 
 Finding collocations requires first calculating the frequencies of words and
@@ -31,22 +31,20 @@ measures are provided in bigram_measures and trigram_measures.
 #   and unigram counts (raw_freq, pmi, student_t)
 
 import itertools as _itertools
-from six import iteritems
-
-from nltk.probability import FreqDist
-from nltk.util import ngrams
 
 # these two unused imports are referenced in collocations.doctest
 from nltk.metrics import (
-    ContingencyMeasures,
     BigramAssocMeasures,
-    TrigramAssocMeasures,
+    ContingencyMeasures,
     QuadgramAssocMeasures,
+    TrigramAssocMeasures,
 )
 from nltk.metrics.spearman import ranks_from_scores, spearman_correlation
+from nltk.probability import FreqDist
+from nltk.util import ngrams
 
 
-class AbstractCollocationFinder(object):
+class AbstractCollocationFinder:
     """
     An abstract base class for collocation finders whose purpose is to
     collect collocation candidate frequencies, filter and rank them.
@@ -98,7 +96,7 @@ class AbstractCollocationFinder(object):
         if the function returns True when passed an ngram tuple.
         """
         tmp_ngram = FreqDist()
-        for ngram, freq in iteritems(self.ngram_fd):
+        for ngram, freq in self.ngram_fd.items():
             if not fn(ngram, freq):
                 tmp_ngram[ngram] = freq
         self.ngram_fd = tmp_ngram
@@ -357,8 +355,8 @@ def demo(scorer=None, compare_scorer=None):
     """Finds bigram collocations in the files of the WebText corpus."""
     from nltk.metrics import (
         BigramAssocMeasures,
-        spearman_correlation,
         ranks_from_scores,
+        spearman_correlation,
     )
 
     if scorer is None:
@@ -384,7 +382,7 @@ def demo(scorer=None, compare_scorer=None):
         )
         print(file)
         print("\t", [" ".join(tup) for tup in cf.nbest(scorer, 15)])
-        print("\t Correlation to %s: %0.4f" % (compare_scorer.__name__, corr))
+        print(f"\t Correlation to {compare_scorer.__name__}: {corr:0.4f}")
 
 
 # Slows down loading too much
@@ -393,6 +391,7 @@ def demo(scorer=None, compare_scorer=None):
 
 if __name__ == "__main__":
     import sys
+
     from nltk.metrics import BigramAssocMeasures
 
     try:

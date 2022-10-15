@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 # Natural Language Toolkit: Language ID module using TextCat algorithm
 #
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Author: Avital Pekker <avital.pekker@utoronto.ca>
 #
-# URL: <http://nltk.org/>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 
 """
@@ -22,19 +21,15 @@ project. A corpus reader was created separately to read
 those files.
 
 For details regarding the algorithm, see:
-http://www.let.rug.nl/~vannoord/TextCat/textcat.pdf
+https://www.let.rug.nl/~vannoord/TextCat/textcat.pdf
 
 For details about An Crubadan, see:
-http://borel.slu.edu/crubadan/index.html
+https://borel.slu.edu/crubadan/index.html
 """
 
-from nltk.compat import PY3
-from nltk.util import trigrams
+from sys import maxsize
 
-if PY3:
-    from sys import maxsize
-else:
-    from sys import maxint
+from nltk.util import trigrams
 
 # Note: this is NOT "re" you're likely used to. The regex module
 # is an alternative to the standard re module that supports
@@ -49,7 +44,7 @@ except ImportError:
 ######################################################################
 
 
-class TextCat(object):
+class TextCat:
 
     _corpus = None
     fingerprints = {}
@@ -60,7 +55,7 @@ class TextCat(object):
 
     def __init__(self):
         if not re:
-            raise EnvironmentError(
+            raise OSError(
                 "classify.textcat requires the regex module that "
                 "supports unicode. Try '$ pip install regex' and "
                 "see https://pypi.python.org/pypi/regex for "
@@ -75,12 +70,12 @@ class TextCat(object):
             self._corpus.lang_freq(lang)
 
     def remove_punctuation(self, text):
-        """ Get rid of punctuation except apostrophes """
+        """Get rid of punctuation except apostrophes"""
         return re.sub(r"[^\P{P}\']+", "", text)
 
     def profile(self, text):
-        """ Create FreqDist of trigrams within text """
-        from nltk import word_tokenize, FreqDist
+        """Create FreqDist of trigrams within text"""
+        from nltk import FreqDist, word_tokenize
 
         clean_text = self.remove_punctuation(text)
         tokens = word_tokenize(clean_text)
@@ -99,8 +94,8 @@ class TextCat(object):
         return fingerprint
 
     def calc_dist(self, lang, trigram, text_profile):
-        """ Calculate the "out-of-place" measure between the
-            text and language profile for a single trigram """
+        """Calculate the "out-of-place" measure between the
+        text and language profile for a single trigram"""
 
         lang_fd = self._corpus.lang_freq(lang)
         dist = 0
@@ -115,16 +110,13 @@ class TextCat(object):
             # Arbitrary but should be larger than
             # any possible trigram file length
             # in terms of total lines
-            if PY3:
-                dist = maxsize
-            else:
-                dist = maxint
+            dist = maxsize
 
         return dist
 
     def lang_dists(self, text):
-        """ Calculate the "out-of-place" measure between
-            the text and all languages """
+        """Calculate the "out-of-place" measure between
+        the text and all languages"""
 
         distances = {}
         profile = self.profile(text)
@@ -141,8 +133,8 @@ class TextCat(object):
         return distances
 
     def guess_language(self, text):
-        """ Find the language with the min distance
-            to the text and return its ISO 639-3 code """
+        """Find the language with the min distance
+        to the text and return its ISO 639-3 code"""
         self.last_distances = self.lang_dists(text)
 
         return min(self.last_distances, key=self.last_distances.get)
@@ -197,7 +189,7 @@ def demo():
         # Try to detect what it is
         print("Language snippet: " + sample[0:140] + "...")
         guess = tc.guess_language(sample)
-        print("Language detection: %s (%s)" % (guess, friendly[guess]))
+        print(f"Language detection: {guess} ({friendly[guess]})")
         print("#" * 140)
 
 

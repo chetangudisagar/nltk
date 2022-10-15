@@ -1,9 +1,8 @@
-# coding: utf-8
 # Natural Language Toolkit: Toolbox Reader
 #
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Author: Greg Aumann <greg_aumann@sil.org>
-# URL: <http://nltk.org>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 
 """
@@ -11,16 +10,15 @@ Module for reading, writing and manipulating
 Toolbox databases and settings files.
 """
 
-import re, codecs
-from xml.etree.ElementTree import ElementTree, TreeBuilder, Element, SubElement
+import codecs
+import re
+from io import StringIO
+from xml.etree.ElementTree import Element, ElementTree, SubElement, TreeBuilder
 
-from six import u
-
-from nltk.compat import StringIO, PY3
 from nltk.data import PathPointer, find
 
 
-class StandardFormat(object):
+class StandardFormat:
     """
     Class for reading and processing standard format marker files and strings.
     """
@@ -38,11 +36,9 @@ class StandardFormat(object):
         :type sfm_file: str
         """
         if isinstance(sfm_file, PathPointer):
-            # [xx] We don't use 'rU' mode here -- do we need to?
-            #      (PathPointer.open doesn't take a mode option)
             self._file = sfm_file.open(self._encoding)
         else:
-            self._file = codecs.open(sfm_file, "rU", self._encoding)
+            self._file = codecs.open(sfm_file, "r", self._encoding)
 
     def open_string(self, s):
         """
@@ -127,12 +123,6 @@ class StandardFormat(object):
             raise ValueError("unicode_fields is set but not encoding.")
         unwrap_pat = re.compile(r"\n+")
         for mkr, val in self.raw_fields():
-            if encoding and not PY3:  # kludge - already decoded in PY3?
-                if unicode_fields is not None and mkr in unicode_fields:
-                    val = val.decode("utf8", errors)
-                else:
-                    val = val.decode(encoding, errors)
-                mkr = mkr.decode(encoding, errors)
             if unwrap:
                 val = unwrap_pat.sub(" ", val)
             if strip:
@@ -156,7 +146,7 @@ class ToolboxData(StandardFormat):
             return self._record_parse(**kwargs)
 
     def _record_parse(self, key=None, **kwargs):
-        """
+        r"""
         Returns an element tree structure corresponding to a toolbox data file with
         all markers at the same level.
 
@@ -320,18 +310,14 @@ def to_sfm_string(tree, encoding=None, errors="strict", unicode_fields=None):
                 else:
                     cur_encoding = encoding
                 if re.search(_is_value, value):
-                    l.append(
-                        (u("\\%s %s\n") % (mkr, value)).encode(cur_encoding, errors)
-                    )
+                    l.append((f"\\{mkr} {value}\n").encode(cur_encoding, errors))
                 else:
-                    l.append(
-                        (u("\\%s%s\n") % (mkr, value)).encode(cur_encoding, errors)
-                    )
+                    l.append((f"\\{mkr}{value}\n").encode(cur_encoding, errors))
             else:
                 if re.search(_is_value, value):
-                    l.append("\\%s %s\n" % (mkr, value))
+                    l.append(f"\\{mkr} {value}\n")
                 else:
-                    l.append("\\%s%s\n" % (mkr, value))
+                    l.append(f"\\{mkr}{value}\n")
     return "".join(l[1:])
 
 
@@ -339,7 +325,7 @@ class ToolboxSettings(StandardFormat):
     """This class is the base class for settings files."""
 
     def __init__(self):
-        super(ToolboxSettings, self).__init__()
+        super().__init__()
 
     def parse(self, encoding=None, errors="strict", **kwargs):
         """
@@ -394,12 +380,12 @@ def _to_settings_string(node, l, **kwargs):
     text = node.text
     if len(node) == 0:
         if text:
-            l.append("\\%s %s\n" % (tag, text))
+            l.append(f"\\{tag} {text}\n")
         else:
             l.append("\\%s\n" % tag)
     else:
         if text:
-            l.append("\\+%s %s\n" % (tag, text))
+            l.append(f"\\+{tag} {text}\n")
         else:
             l.append("\\+%s\n" % tag)
         for n in node:
@@ -464,7 +450,7 @@ def _sort_fields(elem, orders_dicts):
         pass
     else:
         tmp = sorted(
-            [((order.get(child.tag, 1e9), i), child) for i, child in enumerate(elem)]
+            ((order.get(child.tag, 1e9), i), child) for i, child in enumerate(elem)
         )
         elem[:] = [child for key, child in tmp]
     for child in elem:

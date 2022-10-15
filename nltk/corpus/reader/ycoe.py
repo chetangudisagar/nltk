@@ -1,10 +1,8 @@
-# -*- coding: iso-8859-1 -*-
-
 # Natural Language Toolkit: York-Toronto-Helsinki Parsed Corpus of Old English Prose (YCOE)
 #
 # Copyright (C) 2001-2015 NLTK Project
 # Author: Selina Dennis <selina@tranzfusion.net>
-# URL: <http://nltk.org/>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 
 """
@@ -16,20 +14,17 @@ with NLTK.
 
 The YCOE corpus is divided into 100 files, each representing
 an Old English prose text. Tags used within each text complies
-to the YCOE standard: http://www-users.york.ac.uk/~lang22/YCOE/YcoeHome.htm
+to the YCOE standard: https://www-users.york.ac.uk/~lang22/YCOE/YcoeHome.htm
 """
 
 import os
 import re
 
-from six import string_types
-
-from nltk.tokenize import RegexpTokenizer
+from nltk.corpus.reader.api import *
 from nltk.corpus.reader.bracket_parse import BracketParseCorpusReader
 from nltk.corpus.reader.tagged import TaggedCorpusReader
-
 from nltk.corpus.reader.util import *
-from nltk.corpus.reader.api import *
+from nltk.tokenize import RegexpTokenizer
 
 
 class YCOECorpusReader(CorpusReader):
@@ -48,8 +43,8 @@ class YCOECorpusReader(CorpusReader):
         self._pos_reader = YCOETaggedCorpusReader(self.root.join("pos"), ".*", ".pos")
 
         # Make sure we have a consistent set of items:
-        documents = set(f[:-4] for f in self._psd_reader.fileids())
-        if set(f[:-4] for f in self._pos_reader.fileids()) != documents:
+        documents = {f[:-4] for f in self._psd_reader.fileids()}
+        if {f[:-4] for f in self._pos_reader.fileids()} != documents:
             raise ValueError('Items in "psd" and "pos" ' "subdirectories do not match.")
 
         fileids = sorted(
@@ -67,13 +62,13 @@ class YCOECorpusReader(CorpusReader):
         """
         if fileids is None:
             return self._documents
-        if isinstance(fileids, string_types):
+        if isinstance(fileids, str):
             fileids = [fileids]
         for f in fileids:
             if f not in self._fileids:
                 raise KeyError("File id %s not found" % fileids)
         # Strip off the '.pos' and '.psd' extensions.
-        return sorted(set(f[:-4] for f in fileids))
+        return sorted({f[:-4] for f in fileids})
 
     def fileids(self, documents=None):
         """
@@ -82,7 +77,7 @@ class YCOECorpusReader(CorpusReader):
         """
         if documents is None:
             return self._fileids
-        elif isinstance(documents, string_types):
+        elif isinstance(documents, str):
             documents = [documents]
         return sorted(
             set(
@@ -99,7 +94,7 @@ class YCOECorpusReader(CorpusReader):
         if documents is None:
             documents = self._documents
         else:
-            if isinstance(documents, string_types):
+            if isinstance(documents, str):
                 documents = [documents]
             for document in documents:
                 if document not in self._documents:
@@ -111,7 +106,7 @@ class YCOECorpusReader(CorpusReader):
                         )
                     else:
                         raise ValueError("Document identifier %s not found" % document)
-        return ["%s.%s" % (d, subcorpus) for d in documents]
+        return [f"{d}.{subcorpus}" for d in documents]
 
     # Delegate to one of our two sub-readers:
     def words(self, documents=None):

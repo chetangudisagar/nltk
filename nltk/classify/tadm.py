@@ -1,14 +1,12 @@
 # Natural Language Toolkit: Interface to TADM Classifier
 #
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Author: Joseph Frazee <jfrazee@mail.utexas.edu>
-# URL: <http://nltk.org/>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 
-import sys
 import subprocess
-
-from six import string_types
+import sys
 
 from nltk.internals import find_binary
 
@@ -45,8 +43,8 @@ def write_tadm_file(train_toks, encoding, stream):
     """
     # See the following for a file format description:
     #
-    # http://sf.net/forum/forum.php?thread_id=1391502&forum_id=473054
-    # http://sf.net/forum/forum.php?thread_id=1675097&forum_id=473054
+    # https://sf.net/forum/forum.php?thread_id=1391502&forum_id=473054
+    # https://sf.net/forum/forum.php?thread_id=1675097&forum_id=473054
     labels = encoding.labels()
     for featureset, label in train_toks:
         length_line = "%d\n" % len(labels)
@@ -77,7 +75,7 @@ def call_tadm(args):
     """
     Call the ``tadm`` binary with the given arguments.
     """
-    if isinstance(args, string_types):
+    if isinstance(args, str):
         raise TypeError("args should be a list of strings")
     if _tadm_bin is None:
         config_tadm()
@@ -95,14 +93,15 @@ def call_tadm(args):
 
 
 def names_demo():
-    from nltk.classify.util import names_demo
     from nltk.classify.maxent import TadmMaxentClassifier
+    from nltk.classify.util import names_demo
 
     classifier = names_demo(TadmMaxentClassifier.train)
 
 
 def encoding_demo():
     import sys
+
     from nltk.classify.maxent import TadmEventMaxentFeatureEncoding
 
     tokens = [

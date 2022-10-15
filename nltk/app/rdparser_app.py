@@ -1,8 +1,8 @@
 # Natural Language Toolkit: Recursive Descent Parser Application
 #
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Author: Edward Loper <edloper@gmail.com>
-# URL: <http://nltk.org/>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 
 """
@@ -63,19 +63,18 @@ Keyboard Shortcuts::
       [Ctrl-p]\t Print
       [q]\t Quit
 """
-from __future__ import division
 
-from six.moves.tkinter_font import Font
-from six.moves.tkinter import Listbox, IntVar, Button, Frame, Label, Menu, Scrollbar, Tk
+from tkinter import Button, Frame, IntVar, Label, Listbox, Menu, Scrollbar, Tk
+from tkinter.font import Font
 
+from nltk.draw import CFGEditor, TreeSegmentWidget, tree_to_treesegment
+from nltk.draw.util import CanvasFrame, EntryDialog, ShowText, TextWidget
+from nltk.parse import SteppingRecursiveDescentParser
 from nltk.tree import Tree
 from nltk.util import in_idle
-from nltk.parse import SteppingRecursiveDescentParser
-from nltk.draw.util import TextWidget, ShowText, CanvasFrame, EntryDialog
-from nltk.draw import CFGEditor, TreeSegmentWidget, tree_to_treesegment
 
 
-class RecursiveDescentApp(object):
+class RecursiveDescentApp:
     """
     A graphical tool for exploring the recursive descent parser.  The tool
     displays the parser's tree and the remaining text, and allows the
@@ -706,7 +705,7 @@ class RecursiveDescentApp(object):
         )
         TITLE = "About: Recursive Descent Parser Application"
         try:
-            from six.moves.tkinter_messagebox import Message
+            from tkinter.messagebox import Message
 
             Message(message=ABOUT, title=TITLE).show()
         except:

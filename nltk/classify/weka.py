@@ -1,28 +1,25 @@
 # Natural Language Toolkit: Interface to Weka Classsifiers
 #
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Author: Edward Loper <edloper@gmail.com>
-# URL: <http://nltk.org/>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 
 """
 Classifiers that make use of the external 'Weka' package.
 """
 
-import time
-import tempfile
 import os
-import subprocess
 import re
+import subprocess
+import tempfile
+import time
 import zipfile
 from sys import stdin
 
-from six import integer_types, string_types
-
-from nltk.probability import DictionaryProbDist
-from nltk.internals import java, config_java
-
 from nltk.classify.api import ClassifierI
+from nltk.internals import config_java, java
+from nltk.probability import DictionaryProbDist
 
 _weka_classpath = None
 _weka_search = [
@@ -53,9 +50,7 @@ def config_weka(classpath=None):
                 _weka_classpath = os.path.join(path, "weka.jar")
                 version = _check_weka_version(_weka_classpath)
                 if version:
-                    print(
-                        ("[Found Weka: %s (version %s)]" % (_weka_classpath, version))
-                    )
+                    print(f"[Found Weka: {_weka_classpath} (version {version})]")
                 else:
                     print("[Found Weka: %s]" % _weka_classpath)
                 _check_weka_version(_weka_classpath)
@@ -65,7 +60,7 @@ def config_weka(classpath=None):
             "Unable to find weka.jar!  Use config_weka() "
             "or set the WEKAHOME environment variable. "
             "For more information about Weka, please see "
-            "http://www.cs.waikato.ac.nz/ml/weka/"
+            "https://www.cs.waikato.ac.nz/ml/weka/"
         )
 
 
@@ -291,7 +286,7 @@ class ARFF_Formatter:
         string (note: not nominal) types.
         """
         # Find the set of all attested labels.
-        labels = set(label for (tok, label) in tokens)
+        labels = {label for (tok, label) in tokens}
 
         # Determine the types of all features.
         features = {}
@@ -299,9 +294,9 @@ class ARFF_Formatter:
             for (fname, fval) in tok.items():
                 if issubclass(type(fval), bool):
                     ftype = "{True, False}"
-                elif issubclass(type(fval), (integer_types, float, bool)):
+                elif issubclass(type(fval), (int, float, bool)):
                     ftype = "NUMERIC"
-                elif issubclass(type(fval), string_types):
+                elif issubclass(type(fval), str):
                     ftype = "STRING"
                 elif fval is None:
                     continue  # can't tell the type.
@@ -365,7 +360,7 @@ class ARFF_Formatter:
     def _fmt_arff_val(self, fval):
         if fval is None:
             return "?"
-        elif isinstance(fval, (bool, integer_types)):
+        elif isinstance(fval, (bool, int)):
             return "%s" % fval
         elif isinstance(fval, float):
             return "%r" % fval
@@ -374,7 +369,7 @@ class ARFF_Formatter:
 
 
 if __name__ == "__main__":
-    from nltk.classify.util import names_demo, binary_names_demo_features
+    from nltk.classify.util import binary_names_demo_features, names_demo
 
     def make_classifier(featuresets):
         return WekaClassifier.train("/tmp/name.model", featuresets, "C4.5")

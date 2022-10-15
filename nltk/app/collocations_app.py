@@ -1,50 +1,46 @@
 # Natural Language Toolkit: Collocations Application
 # Much of the GUI code is imported from concordance.py; We intend to merge these tools together
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Author: Sumukh Ghodke <sghodke@csse.unimelb.edu.au>
-# URL: <http://nltk.org/>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 #
 
 
-from __future__ import division
-
+import queue as q
 import threading
-
-from six.moves import queue as q
-from six.moves.tkinter_font import Font
-from six.moves.tkinter import (
-    Button,
+from tkinter import (
     END,
+    LEFT,
+    SUNKEN,
+    Button,
     Frame,
     IntVar,
-    LEFT,
     Label,
     Menu,
     OptionMenu,
-    SUNKEN,
     Scrollbar,
     StringVar,
     Text,
     Tk,
 )
+from tkinter.font import Font
 
 from nltk.corpus import (
-    cess_cat,
-    brown,
-    nps_chat,
-    treebank,
-    sinica_treebank,
     alpino,
-    indian,
+    brown,
+    cess_cat,
+    cess_esp,
     floresta,
+    indian,
     mac_morpho,
     machado,
-    cess_esp,
+    nps_chat,
+    sinica_treebank,
+    treebank,
 )
-from nltk.util import in_idle
 from nltk.probability import FreqDist
-
+from nltk.util import in_idle
 
 CORPUS_LOADED_EVENT = "<<CL_EVENT>>"
 ERROR_LOADING_CORPUS_EVENT = "<<ELC_EVENT>>"

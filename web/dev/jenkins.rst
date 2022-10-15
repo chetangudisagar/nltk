@@ -10,9 +10,9 @@ to their FLOSS program. The setup is not specific to their solutions, it could
 be moved to any `Jenkins`_ instance. The URL of our current instance is
 https://jenkins.shiningpanda.com/nltk/
 
-.. _`continuous integration`: http://en.wikipedia.org/wiki/Continuous_integration
+.. _`continuous integration`: https://en.wikipedia.org/wiki/Continuous_integration
 .. _`Shining Panda`: http://shiningpanda.com
-.. _`Jenkins`: http://jenkins-ci.org
+.. _`Jenkins`: https://jenkins-ci.org
 
 
 Base tasks
@@ -68,25 +68,21 @@ installed beforehand, and to make them run a series of extra environment
 variables are initialized. These dependencies will not be detailed until the
 last section.
 
-The test suite itself consists of doctests. These are found in each module as
-docstrings, and in all the .doctest files under the test folder in the nltk
-repo. We run these tests using nose_, find code coverage using `coverage.py`_
-and check for `PEP-8`_ etc. standard violations using `pylint`_.
+The test suite itself consists of doctests and unittests. Doctests are found in
+each module as docstrings, and in all the .doctest files under the test folder in
+the nltk repo. We run these tests using pytest_, find code coverage using
+`pytest-cov`_ and check for `PEP-8`_ etc. standard violations using `pylint`_.
 
 All these tools are easily installable through pip your favourite OS' software
-packaging system. For testing, only nose_ is really needed. This is also the
-only software that does not work properly out of the box. To use the options
-+ELLIPSIS and +NORMALIZE_WHITESPACE in our doctests, we have installed nose
-from source with `a patch that allows this`_ applied.
+packaging system. For testing, you can install the requirements with ``pip install -r requirements-test.txt``
 
 The results of these programs are parsed and published by the jenkins instance,
 giving us pretty graphs :)
 
-.. _nose: http://readthedocs.org/docs/nose/
-.. _`coverage.py`: http://nedbatchelder.com/code/coverage/
-.. _`PEP-8`: http://www.python.org/dev/peps/pep-0008/
-.. _`pylint`: http://www.logilab.org/project/pylint
-.. _`a patch that allows this`: https://github.com/nose-devs/nose/issues/7
+.. _pytest: https://docs.pytest.org/
+.. _`pytest-cov`: https://pytest-cov.readthedocs.io/
+.. _`PEP-8`: https://www.python.org/dev/peps/pep-0008/
+.. _`pylint`: https://pylint.org/
 
 
 The builds
@@ -97,7 +93,7 @@ The packages are built using ``make dist``. The outputted builds are all placed
 specifically for mac are not available. File names are made based on the
 ``__version__`` string, so they change every build.
 
-.. _`in our jenkins workspace`: http://example.com/
+.. _`in our jenkins workspace`: https://example.com/
 
 
 Web page builder
@@ -109,5 +105,5 @@ pushes it to the `nltk.github.com repo on github`_. To push it, it needs access
 to the repo – because this cannot be done using a deploy key, it has the ssh
 key of the ``nltk-webdeploy`` user.
 
-.. _Sphinx: http://sphinx.pocoo.org
+.. _Sphinx: https://www.sphinx-doc.org
 .. _`nltk.github.com repo on github`: https://github.com/nltk/nltk.github.com

@@ -1,26 +1,22 @@
 # Natural Language Toolkit: Language Models
 #
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Authors: Ilia Kurenkov <ilia.kurenkov@gmail.com>
-# URL: <http://nltk.org/>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 """Language Model Interface."""
 
 import random
 from abc import ABCMeta, abstractmethod
 from bisect import bisect
-
-from six import add_metaclass
+from itertools import accumulate
 
 from nltk.lm.counter import NgramCounter
 from nltk.lm.util import log_base2
 from nltk.lm.vocabulary import Vocabulary
 
-from itertools import accumulate
 
-
-@add_metaclass(ABCMeta)
-class Smoothing:
+class Smoothing(metaclass=ABCMeta):
     """Ngram Smoothing Interface
 
     Implements Chen & Goodman 1995's idea that all smoothing algorithms have
@@ -73,8 +69,7 @@ def _weighted_choice(population, weights, random_generator=None):
     return population[bisect(cum_weights, total * threshold)]
 
 
-@add_metaclass(ABCMeta)
-class LanguageModel:
+class LanguageModel(metaclass=ABCMeta):
     """ABC for Language Models.
 
     Cannot be directly instantiated itself.
@@ -85,16 +80,15 @@ class LanguageModel:
         """Creates new LanguageModel.
 
         :param vocabulary: If provided, this vocabulary will be used instead
-        of creating a new one when training.
+            of creating a new one when training.
         :type vocabulary: `nltk.lm.Vocabulary` or None
         :param counter: If provided, use this object to count ngrams.
         :type vocabulary: `nltk.lm.NgramCounter` or None
         :param ngrams_fn: If given, defines how sentences in training text are turned to ngram
-                          sequences.
+            sequences.
         :type ngrams_fn: function or None
-        :param pad_fn: If given, defines how senteces in training text are padded.
+        :param pad_fn: If given, defines how sentences in training text are padded.
         :type pad_fn: function or None
-
         """
         self.order = order
         self.vocab = Vocabulary() if vocabulary is None else vocabulary
@@ -134,10 +128,9 @@ class LanguageModel:
 
         :param str word: Word for which we want the score
         :param tuple(str) context: Context the word is in.
-        If `None`, compute unigram score.
+            If `None`, compute unigram score.
         :param context: tuple(str) or None
         :rtype: float
-
         """
         raise NotImplementedError()
 
@@ -185,7 +178,7 @@ class LanguageModel:
         :param int num_words: How many words to generate. By default 1.
         :param text_seed: Generation can be conditioned on preceding context.
         :param random_seed: A random seed or an instance of `random.Random`. If provided,
-        makes the random sampling part of generation reproducible.
+            makes the random sampling part of generation reproducible.
         :return: One (str) word or a list of words generated from model.
 
         Examples:

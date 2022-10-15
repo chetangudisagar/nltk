@@ -1,8 +1,8 @@
 # Natural Language Toolkit: CFG visualization
 #
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Author: Edward Loper <edloper@gmail.com>
-# URL: <http://nltk.org/>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 
 """
@@ -47,9 +47,7 @@ Visualization tools for CFGs.
 #     - if connected to top & bottom, then disconnect
 
 import re
-
-from six import string_types
-from six.moves.tkinter import (
+from tkinter import (
     Button,
     Canvas,
     Entry,
@@ -62,8 +60,6 @@ from six.moves.tkinter import (
     Toplevel,
 )
 
-from nltk.grammar import CFG, _read_cfg_production, Nonterminal, nonterminals
-from nltk.tree import Tree
 from nltk.draw.tree import TreeSegmentWidget, tree_to_treesegment
 from nltk.draw.util import (
     CanvasFrame,
@@ -72,6 +68,8 @@ from nltk.draw.util import (
     SymbolWidget,
     TextWidget,
 )
+from nltk.grammar import CFG, Nonterminal, _read_cfg_production, nonterminals
+from nltk.tree import Tree
 
 ######################################################################
 # Production List
@@ -148,7 +146,7 @@ the CFG:
 """
 
 
-class CFGEditor(object):
+class CFGEditor:
     """
     A dialog window for creating and editing context free grammars.
     ``CFGEditor`` imposes the following restrictions:
@@ -163,12 +161,12 @@ class CFGEditor(object):
     # we can process the text faster.
     ARROW = SymbolWidget.SYMBOLS["rightarrow"]
     _LHS_RE = re.compile(r"(^\s*\w+\s*)(->|(" + ARROW + "))")
-    _ARROW_RE = re.compile("\s*(->|(" + ARROW + "))\s*")
+    _ARROW_RE = re.compile(r"\s*(->|(" + ARROW + r"))\s*")
     _PRODUCTION_RE = re.compile(
         r"(^\s*\w+\s*)"
         + "(->|("  # LHS
         + ARROW
-        + "))\s*"
+        + r"))\s*"
         + r"((\w+|'[\w ]*'|\"[\w ]*\"|\|)\s*)*$"  # arrow
     )  # RHS
     _TOKEN_RE = re.compile("\\w+|->|'[\\w ]+'|\"[\\w ]+\"|(" + ARROW + ")")
@@ -565,7 +563,7 @@ class CFGEditor(object):
 ######################################################################
 
 
-class CFGDemo(object):
+class CFGDemo:
     def __init__(self, grammar, text):
         self._grammar = grammar
         self._text = text
@@ -676,7 +674,7 @@ class CFGDemo(object):
                 ):
                     pass  # matching nonterminal
                 elif (
-                    isinstance(node, string_types)
+                    isinstance(node, str)
                     and isinstance(widget, TextWidget)
                     and node == widget.text()
                 ):
@@ -730,10 +728,10 @@ class CFGDemo(object):
 
 
 def demo2():
-    from nltk import Nonterminal, Production, CFG
+    from nltk import CFG, Nonterminal, Production
 
     nonterminals = "S VP NP PP P N Name V Det"
-    (S, VP, NP, PP, P, N, Name, V, Det) = [Nonterminal(s) for s in nonterminals.split()]
+    (S, VP, NP, PP, P, N, Name, V, Det) = (Nonterminal(s) for s in nonterminals.split())
     productions = (
         # Syntactic Productions
         Production(S, [NP, VP]),
@@ -771,10 +769,10 @@ def demo2():
 
 
 def demo():
-    from nltk import Nonterminal, CFG
+    from nltk import CFG, Nonterminal
 
     nonterminals = "S VP NP PP P N Name V Det"
-    (S, VP, NP, PP, P, N, Name, V, Det) = [Nonterminal(s) for s in nonterminals.split()]
+    (S, VP, NP, PP, P, N, Name, V, Det) = (Nonterminal(s) for s in nonterminals.split())
 
     grammar = CFG.fromstring(
         """

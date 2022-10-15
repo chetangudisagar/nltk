@@ -1,18 +1,15 @@
 # Natural Language Toolkit: Chatbot Utilities
 #
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Authors: Steven Bird <stevenbird1@gmail.com>
-# URL: <http://nltk.org/>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 
 # Based on an Eliza implementation by Joe Strout <joe@strout.net>,
 # Jeff Epler <jepler@inetnebr.com> and Jez Higgins <jez@jezuk.co.uk>.
 
-import re
 import random
-
-from six.moves import input
-
+import re
 
 reflections = {
     "i am": "you are",
@@ -34,7 +31,7 @@ reflections = {
 }
 
 
-class Chat(object):
+class Chat:
     def __init__(self, pairs, reflections={}):
         """
         Initialize the chatbot.  Pairs is a list of patterns and responses.  Each
@@ -56,9 +53,9 @@ class Chat(object):
         self._regex = self._compile_reflections()
 
     def _compile_reflections(self):
-        sorted_refl = sorted(self._reflections.keys(), key=len, reverse=True)
+        sorted_refl = sorted(self._reflections, key=len, reverse=True)
         return re.compile(
-            r"\b({0})\b".format("|".join(map(re.escape, sorted_refl))), re.IGNORECASE
+            r"\b({})\b".format("|".join(map(re.escape, sorted_refl))), re.IGNORECASE
         )
 
     def _substitute(self, str):

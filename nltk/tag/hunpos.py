@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 # Natural Language Toolkit: Interface to the HunPos POS-tagger
 #
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Author: Peter Ljunglöf <peter.ljunglof@heatherleaf.se>
 #         Dávid Márk Nemeskey <nemeskeyd@gmail.com> (modifications)
 #         Attila Zséder <zseder@gmail.com> (modifications)
-# URL: <http://nltk.org/>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 
 """
@@ -13,14 +12,12 @@ A module for interfacing with the HunPos open-source POS-tagger.
 """
 
 import os
-from subprocess import Popen, PIPE
-
-from six import text_type
+from subprocess import PIPE, Popen
 
 from nltk.internals import find_binary, find_file
 from nltk.tag.api import TaggerI
 
-_hunpos_url = "http://code.google.com/p/hunpos/"
+_hunpos_url = "https://code.google.com/p/hunpos/"
 
 _hunpos_charset = "ISO-8859-1"
 """The default encoding used by hunpos: ISO-8859-1."""
@@ -33,8 +30,12 @@ class HunposTagger(TaggerI):
      - (optionally) the path to the hunpos-tag binary
      - (optionally) the encoding of the training data (default: ISO-8859-1)
 
-    Example:
+    Check whether the required "hunpos-tag" binary is available:
 
+        >>> from nltk.test.setup_fixt import check_binary
+        >>> check_binary('hunpos-tag')
+
+    Example:
         >>> from nltk.tag import HunposTagger
         >>> ht = HunposTagger('en_wsj.model')
         >>> ht.tag('What is the airspeed of an unladen swallow ?'.split())
@@ -123,7 +124,7 @@ class HunposTagger(TaggerI):
         """
         for token in tokens:
             assert "\n" not in token, "Tokens should not contain newlines"
-            if isinstance(token, text_type):
+            if isinstance(token, str):
                 token = token.encode(self._encoding)
             self._hunpos.stdin.write(token + b"\n")
         # We write a final empty line to tell hunpos that the sentence is finished:
@@ -139,13 +140,3 @@ class HunposTagger(TaggerI):
         self._hunpos.stdout.readline()
 
         return tagged_tokens
-
-
-# skip doctests if Hunpos tagger is not installed
-def setup_module(module):
-    from nose import SkipTest
-
-    try:
-        HunposTagger("en_wsj.model")
-    except LookupError:
-        raise SkipTest("HunposTagger is not available")

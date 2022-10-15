@@ -1,30 +1,27 @@
 # Natural Language Toolkit: IEER Corpus Reader
 #
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Author: Steven Bird <stevenbird1@gmail.com>
 #         Edward Loper <edloper@gmail.com>
-# URL: <http://nltk.org/>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 
 """
 Corpus reader for the Information Extraction and Entity Recognition Corpus.
 
 NIST 1999 Information Extraction: Entity Recognition Evaluation
-http://www.itl.nist.gov/iad/894.01/tests/ie-er/er_99/er_99.htm
+https://www.itl.nist.gov/iad/894.01/tests/ie-er/er_99/er_99.htm
 
 This corpus contains the NEWSWIRE development test data for the
 NIST 1999 IE-ER Evaluation.  The files were taken from the
-subdirectory: /ie_er_99/english/devtest/newswire/*.ref.nwt
+subdirectory: ``/ie_er_99/english/devtest/newswire/*.ref.nwt``
 and filenames were shortened.
 
 The corpus contains the following files: APW_19980314, APW_19980424,
 APW_19980429, NYT_19980315, NYT_19980403, and NYT_19980407.
 """
 
-from six import string_types
-
 import nltk
-from nltk import compat
 from nltk.corpus.reader.api import *
 
 #: A dictionary whose keys are the names of documents in this corpus;
@@ -42,8 +39,7 @@ titles = {
 documents = sorted(titles)
 
 
-
-class IEERDocument(object):
+class IEERDocument:
     def __init__(self, text, docno=None, doctype=None, date_time=None, headline=""):
         self.text = text
         self.docno = docno
@@ -59,21 +55,13 @@ class IEERDocument(object):
                 " ".join([w for w in self.text.leaves() if w[:1] != "<"][:12]) + "..."
             )
         if self.docno is not None:
-            return "<IEERDocument %s: %r>" % (self.docno, headline)
+            return f"<IEERDocument {self.docno}: {headline!r}>"
         else:
             return "<IEERDocument: %r>" % headline
 
 
 class IEERCorpusReader(CorpusReader):
-    """
-    """
-
-    def raw(self, fileids=None):
-        if fileids is None:
-            fileids = self._fileids
-        elif isinstance(fileids, string_types):
-            fileids = [fileids]
-        return concat([self.open(f).read() for f in fileids])
+    """ """
 
     def docs(self, fileids=None):
         return concat(

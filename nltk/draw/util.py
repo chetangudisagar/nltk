@@ -1,8 +1,8 @@
 # Natural Language Toolkit: Drawing utilities
 #
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Author: Edward Loper <edloper@gmail.com>
-# URL: <http://nltk.org/>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 
 """
@@ -34,8 +34,8 @@ homepage (http://www.ags.uni-sb.de/~konrad/clig.html).
 
 """
 from abc import ABCMeta, abstractmethod
-from six import add_metaclass
-from six.moves.tkinter import (
+from tkinter import (
+    RAISED,
     Button,
     Canvas,
     Entry,
@@ -49,9 +49,8 @@ from six.moves.tkinter import (
     Tk,
     Toplevel,
     Widget,
-    RAISED,
 )
-from six.moves.tkinter_tkfiledialog import asksaveasfilename
+from tkinter.filedialog import asksaveasfilename
 
 from nltk.util import in_idle
 
@@ -60,8 +59,7 @@ from nltk.util import in_idle
 ##//////////////////////////////////////////////////////
 
 
-@add_metaclass(ABCMeta)
-class CanvasWidget(object):
+class CanvasWidget(metaclass=ABCMeta):
     """
     A collection of graphical elements and bindings used to display a
     complex object on a Tkinter ``Canvas``.  A canvas widget is
@@ -82,18 +80,18 @@ class CanvasWidget(object):
     arguments of the form ``attribute=value``:
 
         >>> from nltk.draw.util import TextWidget
-        >>> cn = TextWidget(c, 'test', color='red')
+        >>> cn = TextWidget(Canvas(), 'test', color='red')  # doctest: +SKIP
 
     Attribute values can also be changed after a canvas widget has
     been constructed, using the ``__setitem__`` operator:
 
-        >>> cn['font'] = 'times'
+        >>> cn['font'] = 'times'  # doctest: +SKIP
 
     The current value of an attribute value can be queried using the
     ``__getitem__`` operator:
 
-        >>> cn['color']
-        red
+        >>> cn['color']  # doctest: +SKIP
+        'red'
 
     For a list of the attributes supported by a type of canvas widget,
     see its class documentation.
@@ -119,6 +117,7 @@ class CanvasWidget(object):
 
       - ``__init__``: Builds a new canvas widget.  It must perform the
         following three tasks (in order):
+
           - Create any new graphical elements.
           - Call ``_add_child_widget`` on each child widget.
           - Call the ``CanvasWidget`` constructor.
@@ -682,7 +681,7 @@ class CanvasWidget(object):
         if not hasattr(self, "_CanvasWidget__children"):
             self.__children = []
         if child.__parent is not None:
-            raise ValueError("{} already has a parent".format(child))
+            raise ValueError(f"{child} already has a parent")
         child.__parent = self
         self.__children.append(child)
 
@@ -977,7 +976,7 @@ class AbstractContainerWidget(CanvasWidget):
         name = self.__class__.__name__
         if name[-6:] == "Widget":
             name = name[:-6]
-        return "[%s: %r]" % (name, self._child)
+        return f"[{name}: {self._child!r}]"
 
 
 class BoxWidget(AbstractContainerWidget):
@@ -1418,7 +1417,7 @@ class SequenceWidget(CanvasWidget):
     def remove_child(self, child):
         """
         Remove the given child canvas widget.  ``child``'s parent will
-        be set ot None.
+        be set to None.
 
         :type child: CanvasWidget
         :param child: The child canvas widget to remove.
@@ -1590,7 +1589,7 @@ class StackWidget(CanvasWidget):
     def remove_child(self, child):
         """
         Remove the given child canvas widget.  ``child``'s parent will
-        be set ot None.
+        be set to None.
 
         :type child: CanvasWidget
         :param child: The child canvas widget to remove.
@@ -1764,7 +1763,7 @@ class ScrollWatcherWidget(CanvasWidget):
 ##//////////////////////////////////////////////////////
 
 
-class CanvasFrame(object):
+class CanvasFrame:
     """
     A ``Tkinter`` frame containing a canvas and scrollbars.
     ``CanvasFrame`` uses a ``ScrollWatcherWidget`` to ensure that all of
@@ -1814,7 +1813,7 @@ class CanvasFrame(object):
         canvas.pack(expand=1, fill="both", side="left")
 
         # Set initial scroll region.
-        scrollregion = "0 0 %s %s" % (canvas["width"], canvas["height"])
+        scrollregion = "0 0 {} {}".format(canvas["width"], canvas["height"])
         canvas["scrollregion"] = scrollregion
 
         self._scrollwatcher = ScrollWatcherWidget(canvas)
@@ -2005,7 +2004,7 @@ class CanvasFrame(object):
 ##//////////////////////////////////////////////////////
 
 
-class ShowText(object):
+class ShowText:
     """
     A ``Tkinter`` window used to display a text.  ``ShowText`` is
     typically used by graphical tools to display help text, or similar
@@ -2088,7 +2087,7 @@ class ShowText(object):
 ##//////////////////////////////////////////////////////
 
 
-class EntryDialog(object):
+class EntryDialog:
     """
     A dialog box for entering
     """
@@ -2169,15 +2168,17 @@ class EntryDialog(object):
 ##//////////////////////////////////////////////////////
 
 
-class ColorizedList(object):
+class ColorizedList:
     """
     An abstract base class for displaying a colorized list of items.
     Subclasses should define:
-      - ``_init_colortags``, which sets up Text color tags that
-        will be used by the list.
-      - ``_item_repr``, which returns a list of (text,colortag)
-        tuples that make up the colorized representation of the
-        item.
+
+    - ``_init_colortags``, which sets up Text color tags that
+      will be used by the list.
+    - ``_item_repr``, which returns a list of (text,colortag)
+      tuples that make up the colorized representation of the
+      item.
+
     :note: Typically, you will want to register a callback for
         ``'select'`` that calls ``mark`` on the given item.
     """
@@ -2215,7 +2216,7 @@ class ColorizedList(object):
         """
         Set up any colortags that will be used by this colorized list.
         E.g.:
-            >>> textwidget.tag_config('terminal', foreground='black')
+            textwidget.tag_config('terminal', foreground='black')
         """
 
     @abstractmethod

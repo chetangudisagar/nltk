@@ -1,9 +1,9 @@
 # Natural Language Toolkit: PP Attachment Corpus Reader
 #
-# Copyright (C) 2001-2019 NLTK Project
+# Copyright (C) 2001-2022 NLTK Project
 # Author: Steven Bird <stevenbird1@gmail.com>
 #         Edward Loper <edloper@gmail.com>
-# URL: <http://nltk.org/>
+# URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
 
 """
@@ -38,13 +38,11 @@ The PP Attachment Corpus is distributed with NLTK with the permission
 of the author.
 """
 
-from six import string_types
-
-from nltk.corpus.reader.util import *
 from nltk.corpus.reader.api import *
+from nltk.corpus.reader.util import *
 
 
-class PPAttachment(object):
+class PPAttachment:
     def __init__(self, sent, verb, noun1, prep, noun2, attachment):
         self.sent = sent
         self.verb = verb
@@ -81,13 +79,6 @@ class PPAttachmentCorpusReader(CorpusReader):
                 for (fileid, enc) in self.abspaths(fileids, True)
             ]
         )
-
-    def raw(self, fileids=None):
-        if fileids is None:
-            fileids = self._fileids
-        elif isinstance(fileids, string_types):
-            fileids = [fileids]
-        return concat([self.open(f).read() for f in fileids])
 
     def _read_tuple_block(self, stream):
         line = stream.readline()
