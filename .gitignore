@@ -33,5 +33,6 @@ nltk/test/*.html
 # automatically built files for website
 web/api/*.rst
 
+# iPython notebooks
 
-
+.ipynb_checkpoints
