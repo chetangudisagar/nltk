@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Corpus Readers
 #
-# Copyright (C) 2001-2022 NLTK Project
+# Copyright (C) 2001-2025 NLTK Project
 # Author: Steven Bird <stevenbird1@gmail.com>
 #         Edward Loper <edloper@gmail.com>
 # URL: <https://www.nltk.org/>
@@ -105,6 +105,7 @@ from nltk.corpus.reader.categorized_sents import *
 from nltk.corpus.reader.comparative_sents import *
 from nltk.corpus.reader.panlex_lite import *
 from nltk.corpus.reader.panlex_swadesh import *
+from nltk.corpus.reader.bcp47 import *
 
 # Make sure that nltk.corpus.reader.bracket_parse gives the module, not
 # the function bracket_parse() defined in nltk.tree:
@@ -181,4 +182,5 @@ __all__ = [
     "UnicharsCorpusReader",
     "MWAPPDBCorpusReader",
     "PanlexSwadeshCorpusReader",
+    "BCP47CorpusReader",
 ]

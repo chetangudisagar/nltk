@@ -1,6 +1,6 @@
 # Natural Language Toolkit: Relation Extraction
 #
-# Copyright (C) 2001-2022 NLTK Project
+# Copyright (C) 2001-2025 NLTK Project
 # Author: Ewan Klein <ewan@inf.ed.ac.uk>
 # URL: <https://www.nltk.org/>
 # For license information, see LICENSE.TXT
@@ -300,6 +300,7 @@ def clause(reldict, relsym):
 # Demos of relation extraction with regular expressions
 #######################################################
 
+
 ############################################
 # Example of in(ORG, LOC)
 ############################################
@@ -426,7 +427,6 @@ def roles_demo(trace=0):
 
 
 def ieer_headlines():
-
     from nltk.corpus import ieer
     from nltk.tree import Tree
 

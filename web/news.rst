@@ -1,8 +1,71 @@
 Release Notes
 =============
 
+2025
+----
+
+NLTK 3.9.2 release: October 2025:
+
+- Update download checksums to use SHA256 in built index
+- Make Wordnet interoperable with various taggers and tagged corpora
+- Fix saving PerceptronTagger
+- Document how to reproduce old Wordnet studies
+- Only import tkinter if a GUI is needed
+- new environment variable NLTK_DOWNLOADER_FORCE_INTERACTIVE_SHELL
+- add Python 3.13 support, drop Python 3.8 support
+- other minor fixes
+
+2024
+----
+
+NLTK 3.9.1 release: August 2024:
+
+- Fixed bug that prevented wordnet from loading
+
+NLTK 3.9 release: August 2024:
+
+- Avoid need for pickled models, resolves security vulnerability CVE-2024-39705
+- No longer sort WordNet synsets and relations (sort in calling function when required)
+- Add Python 3.12 support
+- Many other minor fixes
+
+2023
+----
+
+NLTK 3.8.1 release: January 2023:
+
+- Resolve RCE & XSS vulnerabilities in localhost WordNet Browser
+- Add Python 3.11 support
+
 2022
 ----
+
+NLTK 3.8 release: December 2022:
+
+- Fix WordNet's all_synsets() function
+- Greatly improve time efficiency of SyllableTokenizer when tokenizing numbers
+- Tackle performance and accuracy regression of sentence tokenizer since NLTK 3.6.6
+- Resolve TreebankWordDetokenizer inconsistency with end-of-string contractions
+- Optimize ConditionalFreqDist.__add__ performance
+- Fix LC cutoff policy of text tiling
+- Add Markdown corpus reader
+- Add support for the extended OMW
+- Support both iso639-3 codes and BCP-47 language tags
+- Fix bool field not being read in VerbNet
+- Fix encodings of Polish udhr corpus reader
+- Allow TweetTokenizer to tokenize emoji flag sequences
+- Add "acion" suffix to the Spanish SnowballStemmer
+- Allow loading WordNet without OMW
+- Fix edit_distance_align() in distance.py
+- Add the Iota operator to semantic logic
+- Resolve critical error in CHILDES Corpus
+- Make WordNet information_content() accept adjective satellites
+- Add "strict=True" parameter to CoreNLP
+- Resolve issue with WordNet's synset_from_sense_key
+- Handle WordNet synsets that were lost in mapping
+- Add function to retrieve WordNet synonyms
+- Warn about nonexistent OMW offsets instead of raising an error
+- Fix missing ic argument in res, jcn and lin similarity functions of WordNet
 
 NLTK 3.7 release: February 2022:
 
@@ -244,7 +307,7 @@ NLTK 3.0a4 released: June 2014
 - Several API changes, see https://github.com/nltk/nltk/wiki/Porting-your-code-to-NLTK-3.0
 - For full details see:
 - https://github.com/nltk/nltk/blob/develop/ChangeLog
-- http://nltk.org/nltk3-alpha/
+- http://nltk.org/nltk3-alpha/ (Dead link; see archive at https://web.archive.org/web/20141018104200/https://nltk.org/nltk3-alpha/)
 
 2013
 ----
@@ -258,17 +321,17 @@ NLTK 3.0a2 released: July 2013
 
 - Misc efficiency improvements and bugfixes; for details see
 - https://github.com/nltk/nltk/blob/develop/ChangeLog
-- http://nltk.org/nltk3-alpha/
+- http://nltk.org/nltk3-alpha/ (Dead link; see archive at https://web.archive.org/web/20141018104200/https://nltk.org/nltk3-alpha/)
 
 NLTK 3.0a1 released: February 2013
 
 - This version adds support for NLTK's graphical user interfaces.
-- http://nltk.org/nltk3-alpha/
+- http://nltk.org/nltk3-alpha/ (Dead link; see archive at https://web.archive.org/web/20141018104200/https://nltk.org/nltk3-alpha/)
 
 NLTK 3.0a0 released: January 2013
 
 - The first alpha release of NLTK 3.0 is now available for testing. This version of NLTK works with Python 2.6, 2.7, and Python 3.
-- http://nltk.org/nltk3-alpha/
+- http://nltk.org/nltk3-alpha/ (Dead link; see archive at https://web.archive.org/web/20141018104200/https://nltk.org/nltk3-alpha/)
 
 2012
 ----
